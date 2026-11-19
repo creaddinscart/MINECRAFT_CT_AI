@@ -3,6 +3,10 @@ MINECRAFT_CT_AI
 Bring your own AI into Minecraft - Java Edition 26.3 (Fabric)
 ================================================================================
 
+ONE-LINE SUMMARY (exactly 256 characters, all current + planned features)
+  MINECRAFT_CT_AI: your AI in Minecraft. 9 providers, setup, auto model scan, /ctai Q&A, scalable GUI, safe keys, whitelisted Agent plays for you (/ctai_stop). Upcoming: SSE, vision, chat history, hotkey, TTS, book/sign, Mod Menu, encryption, profiles, i18n.
+  Official logo: branding/logo.png
+
 Full project name : MINECRAFT_CT_AI
 Mod ID            : minecraft_ct_ai
 Version           : 1.0.2

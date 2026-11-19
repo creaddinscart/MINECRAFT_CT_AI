@@ -1,6 +1,12 @@
-# MINECRAFT_CT_AI
+<p align="center">
+  <img src="branding/logo.png" alt="MINECRAFT_CT_AI logo" width="180">
+</p>
 
-**Bring your own AI into Minecraft - Java Edition 26.3 (Fabric)**
+<h1 align="center">MINECRAFT_CT_AI</h1>
+
+<p align="center"><strong>Bring your own AI into Minecraft - Java Edition 26.3 (Fabric)</strong></p>
+
+> **One line (256 chars):** MINECRAFT_CT_AI: your AI in Minecraft. 9 providers, setup, auto model scan, /ctai Q&A, scalable GUI, safe keys, whitelisted Agent plays for you (/ctai_stop). Upcoming: SSE, vision, chat history, hotkey, TTS, book/sign, Mod Menu, encryption, profiles, i18n.
 
 | Metadata | Value |
 | :--- | :--- |
