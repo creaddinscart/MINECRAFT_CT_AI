@@ -1,0 +1,517 @@
+================================================================================
+MINECRAFT_CT_AI
+Bring your own AI into Minecraft - Java Edition 26.3 (Fabric)
+================================================================================
+
+Full project name : MINECRAFT_CT_AI
+Mod ID            : minecraft_ct_ai
+Version           : 1.0.2
+Game version      : Minecraft 26.3 (Java Edition)
+Mod loader        : Fabric
+Environment       : Client only
+Language          : English
+License           : MIT
+
+
+--------------------------------------------------------------------------------
+0. CHANGELOG
+--------------------------------------------------------------------------------
+
+1.0.2 (feature release)
+  - Rebuilt the setup screen with a fully responsive layout. Field widths,
+    spacing, positions and button rows are now calculated from the current
+    screen size on every init() and resize, so the GUI no longer overflows on
+    large screens or unusual GUI scales.
+  - Added a manual UI Scale button to the setup screen. Click it to cycle
+    through 70%, 85%, 100%, 115%, 130% and 150%. The chosen scale is saved to
+    the config and applied immediately.
+  - Added automatic model discovery. The "Scan Models" button queries the
+    provider model list endpoint (GET <host>/v1/models for OpenAI-compatible
+    APIs, plus Ollama, Gemini and Anthropic variants) and stores the result.
+    The "Models (n)" button cycles through the discovered model names into the
+    Model field. Supported for every compatibility mode.
+  - Added AGENT MODE. The AI can now operate the game in real time by issuing
+    whitelisted Minecraft commands based on your plain-language request. Game
+    context (position, dimension, health, weather) is supplied to the AI each
+    step. Agents run step by step with a configurable step limit and delay.
+  - Added `/ctai_stop` (and `/ctai stop`) to stop a running agent immediately.
+  - Added `/ctai ask <question>` for a plain one-shot answer without the agent.
+    With the agent enabled, `/ctai <request>` now routes to the agent.
+  - Added agent settings: agentEnabled, agentMaxSteps, agentStepDelayMs and
+    agentAllowedCommands in the config file, plus an Agent ON/OFF toggle in
+    the setup screen. Only commands whose first word is on the whitelist can
+    be executed, which keeps the agent safe by default.
+
+1.0.1 (bugfix release)
+  - Fixed request URL construction. OpenAI Chat, OpenRouter, Groq, DeepSeek
+    and Custom modes now correctly resolve to <host>/v1/chat/completions.
+    Previously a host such as https://api.openai.com produced
+    /chat/completions without the required /v1 segment. A host that already
+    ends in /v1 is detected and not duplicated.
+  - Fixed API key leakage in chat. Provider error bodies are no longer printed
+    verbatim. Only a short, sanitized provider message is shown, with every
+    key-like token and masked key fragment replaced by [REDACTED].
+  - Added friendly HTTP error guidance for 401 / 403 / 404 / 429 / 5xx errors,
+    including a clear explanation of what to check on authentication failure.
+  - Added API key validation in the setup screen: masked keys containing '*',
+    keys with spaces or line breaks, and keys shorter than 16 characters are
+    rejected before saving.
+  - Added a "Test Connection" button to the setup screen and a `/ctai test`
+    command. Both send a minimal request and report the result using a masked
+    key (first 3 and last 4 characters only).
+  - Added a native DeepSeek compatibility mode with correct defaults
+    (host https://api.deepseek.com, model deepseek-chat). Compatibility modes
+    are now 9.
+
+1.0.0
+  - Initial release.
+
+
+--------------------------------------------------------------------------------
+1. INTRODUCTION
+--------------------------------------------------------------------------------
+
+MINECRAFT_CT_AI is a client-side Fabric mod that connects your own AI API to
+Minecraft. You supply the provider, the API key, the host address and the model.
+The mod then gives you a single in-game command:
+
+    /ctai <question>
+
+Ask anything in chat and the answer is printed back into your chat window.
+The mod does not include or pay for any AI service. It uses the account and key
+you configure, so you stay in full control of data, cost and provider choice.
+
+Key points
+  - Runs entirely on the client. No server install is required.
+  - Works in singleplayer and on any multiplayer server that allows chat
+    commands from client-side mods.
+  - A first-run setup screen must be completed before the game main menu is
+    available. This guarantees the bot identity and API details are set first.
+  - Supports nine compatibility modes covering the most common AI APIs.
+  - Optional AGENT MODE lets the AI operate the game through safe, whitelisted
+    Minecraft commands, with `/ctai_stop` as an emergency brake.
+  - All API traffic goes directly from your game to the host you configure.
+    Your key is stored locally on your machine only.
+
+
+--------------------------------------------------------------------------------
+2. WHAT HAPPENS ON FIRST LAUNCH
+--------------------------------------------------------------------------------
+
+When the game starts for the first time, the title screen is replaced by the
+CREADDINSCART AI BOT setup screen. You cannot reach the main menu until setup is
+saved. Fill in the fields in this order:
+
+  1. Bot Name
+     The display name for your assistant. Default: CREADDINSCART AI BOT.
+     This name is shown in every chat reply.
+
+  2. API Key
+     Paste the secret key from your AI provider. Required for hosted modes
+     (OpenAI, Anthropic, Gemini, OpenRouter, Groq). Not required for Ollama
+     or Custom local endpoints.
+
+  3. API Host
+     The base URL of the provider, without a trailing path.
+     Example: https://api.openai.com
+     The mod appends the correct endpoint path for the selected mode.
+
+  4. Model
+     The model identifier to use, e.g. gpt-4o-mini, claude-3-5-haiku-latest,
+     gemini-1.5-flash, llama3.1.
+     Leave it empty to load the default for the selected compatibility mode.
+
+  5. System Prompt
+     Instructions that define how the bot behaves. Default: "You are a
+     helpful assistant inside Minecraft."
+
+  6. Temperature
+     Controls randomness. Range 0.0 - 2.0. Default 0.7.
+
+  7. Max Tokens
+     Maximum length of the generated answer. Default 512.
+
+  8. Timeout (s)
+     Seconds to wait for a reply. Default 30. Minimum 5.
+
+  9. Compatibility
+     Click the button repeatedly to cycle through the nine supported modes.
+     The selected mode is shown directly on the button.
+
+  Extra controls
+    - Scan Models    Fetches the list of available models from your API host.
+                     The provider must support a model-list endpoint.
+    - Models (n)     After a scan, cycles through the discovered models and
+                     writes the selected name into the Model field. The number
+                     in the label is how many models were found.
+    - Test Connection Sends a minimal request to confirm host, key and model.
+    - UI xx%         Cycles the interface scale: 70/85/100/115/130/150%.
+                     The layout also auto-fits any screen size automatically.
+    - Agent ON/OFF   Enables or disables AGENT MODE (default ON).
+
+Click "Save & Continue" to validate and store the configuration, then the game
+main menu opens. "Cancel" returns to the title screen; setup will be required
+again until a valid configuration is saved.
+
+A "CT AI Setup" button is permanently available in the bottom-right corner of
+the title screen so you can reopen and edit these settings at any time.
+
+
+--------------------------------------------------------------------------------
+3. USER GUIDE - HOW TO USE
+--------------------------------------------------------------------------------
+
+3.1 Installation
+  a. Install Java 25 (required by Minecraft 26.3).
+  b. Install Fabric Loader 0.19.5 or newer for Minecraft 26.3.
+  c. Download Fabric API and place it in your mods folder.
+  d. Place MINECRAFT_CT_AI-1.0.2.jar in the same mods folder.
+  e. Launch the game with the Fabric profile.
+
+  Mods folder locations:
+    Windows : %appdata%\.minecraft\mods
+    macOS   : ~/Library/Application Support/minecraft/mods
+    Linux   : ~/.minecraft/mods
+
+3.2 Asking a question
+  Type in chat:
+
+      /ctai What is the fastest way to find diamonds?
+
+  The mod replies with:
+      [CT AI] CREADDINSCART AI BOT is thinking...
+      [CT AI] CREADDINSCART AI BOT: <answer>
+
+  Questions may contain spaces. Multi-line answers are split into separate
+  chat lines automatically.
+
+3.3 Example questions
+      /ctai Explain how redstone repeaters work
+      /ctai Give me a beginner-friendly base design
+      /ctai Translate "hello" into Japanese
+      /ctai Summarize the current biome I am in
+
+3.4 Commands reference
+
+  COMMAND                          DESCRIPTION
+  /ctai <request>                  With the agent ON (default), starts an AI
+                                   agent that works toward your request by
+                                   running Minecraft commands. With the agent
+                                   OFF, behaves like a plain question.
+  /ctai ask <question>             One-shot answer only. Never runs commands,
+                                   regardless of the agent setting.
+  /ctai stop                       Stops the running agent.
+  /ctai_stop                       Same as /ctai stop, quick emergency stop.
+  /ctai test                       Tests host, key and model with a tiny request.
+
+3.5 Agent mode (operating Minecraft with AI)
+
+  With the agent enabled, simply describe what you want in plain English:
+
+      /ctai set the time to day and clear the weather
+      /ctai find the nearest village and tell me the coordinates
+      /ctai build a small glass dome around me
+
+  How it works
+    - Each step, the mod collects your current game context: position,
+      dimension, health and whether it is raining.
+    - It asks the AI for a JSON decision containing a short message, a list of
+      commands to run, and whether the task is finished.
+    - Returned commands are checked against a whitelist. Only commands whose
+      first word is allowed are executed; anything else is blocked.
+    - Approved commands are sent through the client connection on the game
+      thread, so they behave like commands you typed yourself.
+    - The loop repeats with a short delay until the AI says it is done, the step
+      limit is reached, or you stop it.
+
+  Stopping the agent
+      /ctai_stop
+
+  This interrupts the agent immediately, even between steps. Use it any time
+  the agent is doing something you do not want.
+
+  Safety defaults
+    - agentEnabled          : true
+    - agentMaxSteps         : 12   (hard cap 40)
+    - agentStepDelayMs      : 1200 (pause between steps)
+    - agentAllowedCommands  : time, weather, locate, seed, list, say, me,
+                              tell, msg, help, gamerule, title, playsound,
+                              particle
+  Only these command names can ever be executed. To change them, edit the
+  config file (see section 3.7) or turn the agent OFF in the setup screen.
+  Commands that modify the world are deliberately kept off the list by default.
+
+  Note: agent behaviour depends on your model following the JSON instruction.
+  Small or weak models may return unreadable output; stronger instruction-
+  following models work best. Plain question answering is always available
+  through /ctai ask.
+
+3.6 Compatibility modes and hosts
+
+  MODE                       DEFAULT HOST                                  ENDPOINT
+  OpenAI Chat Completions    https://api.openai.com                        /chat/completions
+  OpenAI Responses API       https://api.openai.com                        /responses
+  Anthropic Messages         https://api.anthropic.com                     /v1/messages
+  Google Gemini              https://generativelanguage.googleapis.com    /v1beta/models/...
+  Ollama                     http://localhost:11434                        /api/chat
+  OpenRouter                 https://openrouter.ai/api                     /chat/completions
+  Groq                       https://api.groq.com/openai                   /chat/completions
+  Custom / OpenAI-compatible http://localhost:8000/v1                      /chat/completions
+
+  Notes
+    - OpenAI-compatible local servers (LM Studio, llama.cpp, vLLM, LocalAI,
+      KoboldCpp) should use "Custom / OpenAI-compatible" with their base URL.
+    - Gemini passes the key as a "key" query parameter, as required by Google.
+    - Anthropic sends the x-api-key and anthropic-version headers.
+    - OpenRouter and Groq send the standard Authorization: Bearer header.
+    - Ollama needs no API key and works fully offline once a model is pulled.
+    - Model scanning uses GET /v1/models for OpenAI-compatible APIs, /api/tags
+      for Ollama, /v1beta/models for Gemini and /v1/models for Anthropic.
+
+3.7 Configuration file
+  Settings are stored at:
+
+      <minecraft config dir>/minecraft_ct_ai.json
+
+  Default config dir:
+    Windows : %appdata%\.minecraft\config
+    macOS   : ~/Library/Application Support/minecraft/config
+    Linux   : ~/.minecraft/config
+
+  Example:
+
+  {
+    "botName": "CREADDINSCART AI BOT",
+    "apiKey": "sk-...",
+    "apiHost": "https://api.openai.com",
+    "compatibilityMode": "OPENAI_CHAT",
+    "model": "gpt-4o-mini",
+    "systemPrompt": "You are a helpful assistant inside Minecraft.",
+    "temperature": 0.7,
+    "maxTokens": 512,
+    "timeoutSeconds": 30,
+    "completed": false,
+    "uiScale": 1.0,
+    "availableModels": ["gpt-4o-mini", "gpt-4o"],
+    "agentEnabled": true,
+    "agentMaxSteps": 12,
+    "agentStepDelayMs": 1200,
+    "agentAllowedCommands": "time,weather,locate,seed,list,say,me,tell,msg,help,gamerule,title,playsound,particle"
+  }
+
+  Valid values for compatibilityMode:
+    OPENAI_CHAT, OPENAI_RESPONSES, ANTHROPIC_MESSAGES, GOOGLE_GEMINI,
+    OLLAMA, DEEPSEEK, OPENROUTER, GROQ, CUSTOM
+
+  New in 1.0.2:
+    uiScale            UI scale factor (0.70 - 1.50).
+    availableModels    Model names from the last successful scan.
+    agentEnabled       Master switch for agent mode.
+    agentMaxSteps      Maximum commands/steps per agent run.
+    agentStepDelayMs   Milliseconds to wait between steps.
+    agentAllowedCommands  Comma-separated command whitelist for the agent.
+
+  Delete this file to restore defaults and trigger the setup screen again.
+
+3.8 Troubleshooting
+  "Setup is not complete"        Open the CT AI Setup button on the title
+                                 screen and save valid settings.
+  "Request failed: HTTP 401"     API key is wrong or expired.
+  "Request failed: HTTP 404"     API host or model name is incorrect.
+  "Request failed: HTTP 429"     Rate limit reached on your provider account.
+  "Provider returned an empty
+   answer"                       The model returned no text, or the response
+                                 format did not match the selected mode.
+  "Connection refused"           Host is online? Check local servers and port.
+  Slow replies                   Lower Max Tokens, or use a faster model.
+
+  Security note: your API key is stored in plain text in the local JSON file.
+  Do not share that file or commit it to a public repository.
+
+
+--------------------------------------------------------------------------------
+4. DEVELOPER DOCUMENTATION
+--------------------------------------------------------------------------------
+
+4.1 Toolchain
+  Minecraft        : 26.3 (unobfuscated Mojang names)
+  Java             : 25
+  Gradle           : 9.6.0 (wrapper included)
+  Fabric Loom      : 1.17.21
+  Fabric Loader    : 0.19.5
+  Fabric API       : 0.160.7+26.3
+
+4.2 Project layout
+
+  MINECRAFT_CT_AI/
+  |-- build.gradle
+  |-- gradle.properties
+  |-- settings.gradle
+  |-- gradlew
+  |-- gradle/wrapper/
+  |   |-- gradle-wrapper.jar
+  |   `-- gradle-wrapper.properties
+  `-- src/main/
+      |-- java/com/creaddinscart/ctai/
+      |   |-- MINECRAFT_CT_AI.java      Client entrypoint
+      |   |-- CTAIConfig.java           JSON config model + load/save
+      |   |-- AiCompatibility.java      Provider enum and defaults
+      |   |-- AiClient.java             HTTP requests + response parser + model scan
+      |   |-- CTAICommand.java          /ctai, /ctai_stop command registration
+      |   |-- CTAIAgent.java            Agent loop, context capture, command guard
+      |   |-- SetupScreen.java          Responsive configuration GUI
+      |   `-- mixin/
+      |       `-- TitleScreenMixin.java Setup gate + title screen button
+      `-- resources/
+          |-- fabric.mod.json
+          |-- minecraft_ct_ai.mixins.json
+          `-- assets/minecraft_ct_ai/icon.png
+
+4.3 Build from source
+
+  git clone <your-repo-url> MINECRAFT_CT_AI
+  cd MINECRAFT_CT_AI
+  ./gradlew build
+
+  Output JAR: build/libs/MINECRAFT_CT_AI-1.0.2.jar
+
+  Run a development client:
+  ./gradlew runClient
+
+  Regenerate the Gradle wrapper if needed:
+  gradle wrapper --gradle-version 9.6.0
+
+4.4 Runtime flow
+
+  onInitializeClient()
+    -> CTAIConfig.load()      reads minecraft_ct_ai.json
+    -> CTAICommand.register() registers /ctai via ClientCommandRegistrationCallback
+
+  TitleScreenMixin
+    -> if config.completed == false, opens SetupScreen before the main menu
+    -> always adds the "CT AI Setup" button to the title screen
+
+  /ctai <request>  (agent ON)
+    -> CTAIAgent.start() launches a daemon agent worker
+    -> each step captures game context on the client thread (position,
+       dimension, health, weather)
+    -> AiClient.ask() returns a JSON decision (message, commands, done)
+    -> commands are whitelist-checked and sent via player.connection.sendCommand()
+    -> repeats until done, step limit, or /ctai_stop
+    -> /ctai_stop sets the stop flag and interrupts the worker
+
+  /ctai ask <question>  or  /ctai <request> (agent OFF)
+    -> validates config
+    -> prints a "thinking" line
+    -> starts a daemon worker thread
+    -> AiClient.ask() builds a provider-specific HTTP request with java.net.http
+    -> response is parsed by AiClient.extractText()
+    -> result is posted back on the client game thread via Minecraft.execute()
+    -> answer is printed to chat, one line per non-empty answer line
+
+  Scan Models
+    -> AiClient.listModels() sends GET to the provider model-list endpoint
+    -> data[].id (or Ollama/Gemini equivalent) is parsed into a sorted list
+    -> saved to config.availableModels; Models button cycles values
+
+  HTTP requests never run on the render thread, so the game does not freeze
+  while waiting for an AI provider. All game-state reads and command sends are
+  scheduled onto the client thread through Minecraft.execute().
+
+4.5 Adding a new compatibility mode
+
+  a. Add a constant to AiCompatibility with display name, default host,
+     default model and whether an API key is required.
+  b. Add a case in AiClient.buildRequest() to construct the URL, JSON body
+     and required headers.
+  c. Add a case in AiClient.extractText() to read the answer from the JSON
+     response.
+  d. Document the mode in section 3.4 and update this file.
+  e. Rebuild with ./gradlew build.
+
+4.6 Important 26.x API notes (for maintainers)
+
+  - Minecraft 26.3 ships unobfuscated Mojang names. There is no Yarn mapping
+    step in the code; imports use net.minecraft.* directly.
+  - Loom 1.17+ uses the "net.fabricmc.fabric-loom" plugin ID.
+  - Client commands use ClientCommands.literal / ClientCommands.argument, and
+    ClientCommandRegistrationCallback.EVENT now has two parameters:
+    (dispatcher, buildContext).
+  - FabricClientCommandSource exposes sendFeedback(Component), sendError(Component),
+    getClient(), getPlayer() and getLevel().
+  - Screens render custom text through extractRenderState(GuiGraphicsExtractor,...)
+    with graphics.text(...) and graphics.centeredText(...).
+  - Screen changes use minecraft.gui.setScreen(...), not minecraft.setScreen(...).
+  - EditBox uses the (font, x, y, width, height, Component) constructor.
+  - Mixin compatibilityLevel is JAVA_25.
+  - A Screen can be re-laid out by calling rebuildWidgets() after changing
+    config; init() runs again on resize, which drives the responsive layout.
+  - LocalPlayer exposes getX()/getY()/getZ(), getHealth(), getMaxHealth(),
+    level() and the public field connection.
+  - ClientPacketListener.sendCommand(String) sends a command without a leading
+    slash; ClientPacketListener.sendChat(String) sends plain chat.
+  - The current dimension key is level().dimension().identifier().toString()
+    (26.x renamed location() to identifier()). Weather is level().isRaining().
+
+4.7 Coding conventions
+  - All user-facing strings are English.
+  - No inline comments in the Java source.
+  - Provider calls are asynchronous; UI updates are scheduled on the client
+    thread with Minecraft.execute().
+  - Configuration is plain JSON via Gson, written only on explicit save.
+
+
+--------------------------------------------------------------------------------
+5. PLANNED / UPCOMING FEATURES
+--------------------------------------------------------------------------------
+
+The following are planned for future releases and are NOT part of 1.0.2.
+
+  Shipped in 1.0.2 (no longer planned):
+      - Responsive / manually scalable setup screen.
+      - Automatic model discovery from the API host.
+      - Agent mode with /ctai_stop, command whitelist and game context.
+
+  5.1 User experience
+      - Chat history panel with scrollback and re-ask buttons.
+      - Streaming replies displayed progressively in chat.
+      - Clickable suggested questions above the chat input.
+      - Per-bot aliases and multiple saved bot profiles.
+
+  5.2 Provider support
+      - Streaming SSE support for OpenAI-compatible providers.
+      - Vision / screenshot input: attach the current game screenshot to a
+        question for scene-aware answers.
+      - Custom header editor for enterprise gateways and proxies.
+      - Response format templates for non-standard JSON APIs.
+
+  5.3 Minecraft integration
+      - richer agent context: biome, nearby blocks, inventory and entities.
+      - Agent action presets / saved task macros.
+      - Keybind to open a quick-ask input box.
+      - Optional text-to-speech for bot replies.
+      - Configurable chat prefix, colors and name formatting.
+      - Book / sign integration so answers can be written into the world.
+
+  5.4 Safety and controls
+      - Local rate limiting and per-session token budget display.
+      - Optional prompt allow-list and moderation filter.
+      - Encrypted local key storage option.
+      - Per-server / per-world whitelist profiles for the agent.
+
+  5.5 Developer tooling
+      - Mod Menu integration for editing settings from the Mods screen.
+      - Unit tests for request building and response parsing.
+      - Fabric API version matrix and automated build workflow.
+      - Public extension point so other mods can register AI providers.
+      - Translation files for non-English locales.
+
+
+--------------------------------------------------------------------------------
+6. CREDITS
+--------------------------------------------------------------------------------
+
+Designed and developed by CREADDINSCART.
+Built for Minecraft 26.3 and the Fabric ecosystem.
+MIT License - see the LICENSE file in the project root.
+================================================================================
