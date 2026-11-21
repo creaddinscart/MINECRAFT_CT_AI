@@ -80,14 +80,14 @@ SSE streaming replies, screenshot / vision input, chat history with scrollback, 
 ## Installation
 
 1. Install **Java 25** (required by Minecraft 26.1 - 26.3).
-2. Install **Fabric Loader 0.19.5+** for your Minecraft version.
+2. Install **Fabric Loader 0.16.0+** for your Minecraft version.
 3. Add the **Fabric API** build matching your Minecraft version to your `mods` folder.
 4. Add `MINECRAFT_CT_AI-1.0.2.jar` to the same folder — this single JAR works on all of 26.1, 26.1.1, 26.1.2, 26.2 and 26.3.
 5. Launch with the Fabric profile and complete the setup screen.
 
 **Mods folder:** `%appdata%\.minecraft\mods` (Windows) · `~/Library/Application Support/minecraft/mods` (macOS) · `~/.minecraft/mods` (Linux)
 
-**Requirements:** Minecraft 26.1 - 26.3 · Java 25 · Fabric Loader 0.19.5+ · Fabric API (matching build)
+**Requirements:** Minecraft 26.1 - 26.3 · Java 25 · Fabric Loader 0.16.0+ · Fabric API (matching build)
 
 ---
 

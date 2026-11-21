@@ -171,7 +171,7 @@ the title screen so you can reopen and edit these settings at any time.
 
 3.1 Installation
   a. Install Java 25 (required by Minecraft 26.1 - 26.3).
-  b. Install Fabric Loader 0.19.5 or newer for your Minecraft version.
+  b. Install Fabric Loader 0.16.0 or newer for your Minecraft version.
   c. Download the Fabric API build matching your Minecraft version and place
      it in your mods folder.
   d. Place MINECRAFT_CT_AI-1.0.2.jar in the same mods folder. This single JAR
@@ -349,7 +349,7 @@ the title screen so you can reopen and edit these settings at any time.
   Java             : 25
   Gradle           : 9.6.0 (wrapper included)
   Fabric Loom      : 1.17.21
-  Fabric Loader    : 0.19.5
+  Fabric Loader    : 0.19.5 (build-time only; runtime requires 0.16.0+)
   Fabric API       : 0.160.7+26.3 (compile only; users need the build for
                      their Minecraft version at runtime)
 

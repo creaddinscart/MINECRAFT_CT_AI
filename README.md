@@ -125,12 +125,12 @@ All HTTP calls run on daemon worker threads — the render thread never blocks. 
 | :--- | :--- |
 | Minecraft | Java Edition 26.1 / 26.1.1 / 26.1.2 / 26.2 / 26.3 (one JAR, all versions) |
 | Java | 25 |
-| Fabric Loader | 0.19.5+ |
+| Fabric Loader | 0.16.0+ |
 | Fabric API | matching your Minecraft version |
 
 **Install**
 
-1. Install Java 25 and Fabric Loader 0.19.5+ for your Minecraft version (26.1 - 26.3).
+1. Install Java 25 and Fabric Loader 0.16.0+ for your Minecraft version (26.1 - 26.3).
 2. Put **Fabric API** (build matching your Minecraft version) in your `mods` folder.
 3. Put `MINECRAFT_CT_AI-1.0.2.jar` in the same folder — the same JAR works on 26.1, 26.1.1, 26.1.2, 26.2 and 26.3.
 4. Launch with the Fabric profile and complete the setup screen.

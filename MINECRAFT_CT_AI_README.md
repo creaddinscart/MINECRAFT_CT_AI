@@ -79,7 +79,7 @@ A **"CT AI Setup"** button is permanently available in the bottom-right corner o
 ### 3.1 Installation
 
 1. Install Java 25 (required by Minecraft 26.1 - 26.3).
-2. Install Fabric Loader 0.19.5 or newer for your Minecraft version.
+2. Install Fabric Loader 0.16.0 or newer for your Minecraft version.
 3. Download the Fabric API build matching your Minecraft version and place it in your `mods` folder.
 4. Place `MINECRAFT_CT_AI-1.0.2.jar` in the same `mods` folder — one JAR works on 26.1, 26.1.1, 26.1.2, 26.2 and 26.3.
 5. Launch the game with the Fabric profile.
@@ -225,7 +225,8 @@ Delete this file to restore defaults and trigger the setup screen again.
 | **Java** | 25 |
 | **Gradle** | 9.6.0 (wrapper included) |
 | **Fabric Loom** | 1.17.21 |
-| **Fabric Loader** | 0.19.5 |
+| **Fabric Loader (build)** | 0.19.5 |
+| **Fabric Loader (runtime)** | 0.16.0+ |
 | **Fabric API** | 0.160.7+26.3 (compile only) |
 
 Cross-version compatibility: every `net.minecraft` symbol referenced by the mod exists in all five supported builds. Screen transitions use the stable `Minecraft.setScreenAndShow(Screen)` API, so the same bytecode runs everywhere. `fabric.mod.json` declares `minecraft = ">=26.1 <=26.3"`.
