@@ -1,6 +1,6 @@
 ================================================================================
 MINECRAFT_CT_AI
-Bring your own AI into Minecraft - Java Edition 26.3 (Fabric)
+Bring your own AI into Minecraft - Java Edition 26.1 - 26.3 (Fabric)
 ================================================================================
 
 ONE-LINE SUMMARY (exactly 256 characters, all current + planned features)
@@ -9,17 +9,24 @@ ONE-LINE SUMMARY (exactly 256 characters, all current + planned features)
 
 Full project name : MINECRAFT_CT_AI
 Mod ID            : minecraft_ct_ai
-Version           : 1.0.2
-Game version      : Minecraft 26.3 (Java Edition)
+Version           : 1.0.3
+Game version      : Minecraft 26.1 / 26.1.1 / 26.1.2 / 26.2 / 26.3 (one JAR, all versions)
 Mod loader        : Fabric
 Environment       : Client only
 Language          : English
-License           : MIT
+License           : CREADDINSCART STUDIO terms of use + upstream MIT License
 
 
 --------------------------------------------------------------------------------
 0. CHANGELOG
 --------------------------------------------------------------------------------
+
+1.0.3 (multi-version release)
+  - A single JAR now supports Minecraft 26.1, 26.1.1, 26.1.2, 26.2 and 26.3.
+  - Screen transitions now use the stable Minecraft.setScreenAndShow(Screen)
+    API, which internally adapts between the 26.1-style Minecraft.setScreen()
+    and the 26.2+ Gui.setScreen(), so the same bytecode runs on every build.
+  - No feature changes from 1.0.2; AI, agent and GUI behaviour is unchanged.
 
 1.0.2 (feature release)
   - Rebuilt the setup screen with a fully responsive layout. Field widths,
@@ -166,10 +173,12 @@ the title screen so you can reopen and edit these settings at any time.
 --------------------------------------------------------------------------------
 
 3.1 Installation
-  a. Install Java 25 (required by Minecraft 26.3).
-  b. Install Fabric Loader 0.19.5 or newer for Minecraft 26.3.
-  c. Download Fabric API and place it in your mods folder.
-  d. Place MINECRAFT_CT_AI-1.0.2.jar in the same mods folder.
+  a. Install Java 25 (required by Minecraft 26.1 - 26.3).
+  b. Install Fabric Loader 0.19.5 or newer for your Minecraft version.
+  c. Download the Fabric API build matching your Minecraft version and place
+     it in your mods folder.
+  d. Place MINECRAFT_CT_AI-1.0.3.jar in the same mods folder. This single JAR
+     works on 26.1, 26.1.1, 26.1.2, 26.2 and 26.3.
   e. Launch the game with the Fabric profile.
 
   Mods folder locations:
@@ -338,12 +347,19 @@ the title screen so you can reopen and edit these settings at any time.
 --------------------------------------------------------------------------------
 
 4.1 Toolchain
-  Minecraft        : 26.3 (unobfuscated Mojang names)
+  Build against    : Minecraft 26.3 (unobfuscated Mojang names)
+  Runs on          : 26.1 / 26.1.1 / 26.1.2 / 26.2 / 26.3 (single JAR)
   Java             : 25
   Gradle           : 9.6.0 (wrapper included)
   Fabric Loom      : 1.17.21
   Fabric Loader    : 0.19.5
-  Fabric API       : 0.160.7+26.3
+  Fabric API       : 0.160.7+26.3 (compile only; users need the build for
+                     their Minecraft version at runtime)
+
+  Cross-version note: every net.minecraft symbol referenced by the mod exists
+  in all 5 supported builds. Screen switching uses Minecraft.setScreenAndShow,
+  the stable API that internally maps to Minecraft.setScreen (26.1) or
+  Gui.setScreen (26.2+). fabric.mod.json declares minecraft = ">=26.1 <=26.3".
 
 4.2 Project layout
 
@@ -377,7 +393,7 @@ the title screen so you can reopen and edit these settings at any time.
   cd MINECRAFT_CT_AI
   ./gradlew build
 
-  Output JAR: build/libs/MINECRAFT_CT_AI-1.0.2.jar
+  Output JAR: build/libs/MINECRAFT_CT_AI-1.0.3.jar
 
   Run a development client:
   ./gradlew runClient
@@ -445,7 +461,10 @@ the title screen so you can reopen and edit these settings at any time.
     getClient(), getPlayer() and getLevel().
   - Screens render custom text through extractRenderState(GuiGraphicsExtractor,...)
     with graphics.text(...) and graphics.centeredText(...).
-  - Screen changes use minecraft.gui.setScreen(...), not minecraft.setScreen(...).
+  - Screen changes use minecraft.setScreenAndShow(Screen). This stable API is
+    present in 26.1 - 26.3 and internally adapts between Minecraft.setScreen
+    (26.1) and Gui.setScreen (26.2+). Do NOT call minecraft.gui.setScreen(...)
+    directly: the gui field only exists in 26.2+.
   - EditBox uses the (font, x, y, width, height, Component) constructor.
   - Mixin compatibilityLevel is JAVA_25.
   - A Screen can be re-laid out by calling rebuildWidgets() after changing
@@ -469,7 +488,7 @@ the title screen so you can reopen and edit these settings at any time.
 5. PLANNED / UPCOMING FEATURES
 --------------------------------------------------------------------------------
 
-The following are planned for future releases and are NOT part of 1.0.2.
+The following are planned for future releases and are NOT part of 1.0.3.
 
   Shipped in 1.0.2 (no longer planned):
       - Responsive / manually scalable setup screen.
@@ -515,7 +534,9 @@ The following are planned for future releases and are NOT part of 1.0.2.
 6. CREDITS
 --------------------------------------------------------------------------------
 
-Designed and developed by CREADDINSCART.
-Built for Minecraft 26.3 and the Fabric ecosystem.
+Designed and developed by CREADDINSCART STUDIO CREADDINSCART.
+Built for Minecraft 26.1 - 26.3 and the Fabric ecosystem.
+Made with CREADDINSCART STUDIO - https://www.shit.pub/studio/
+Licensed under the CREADDINSCART STUDIO terms of use together with the upstream
 MIT License - see the LICENSE file in the project root.
 ================================================================================

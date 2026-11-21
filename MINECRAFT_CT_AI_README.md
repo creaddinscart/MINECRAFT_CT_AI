@@ -4,7 +4,7 @@
 
 <h1 align="center">MINECRAFT_CT_AI</h1>
 
-<p align="center"><strong>Bring your own AI into Minecraft - Java Edition 26.3 (Fabric)</strong></p>
+<p align="center"><strong>Bring your own AI into Minecraft - Java Edition 26.1 - 26.3 (Fabric)</strong></p>
 
 > **One line (256 chars):** MINECRAFT_CT_AI: your AI in Minecraft. 9 providers, setup, auto model scan, /ctai Q&A, scalable GUI, safe keys, whitelisted Agent plays for you (/ctai_stop). Upcoming: SSE, vision, chat history, hotkey, TTS, book/sign, Mod Menu, encryption, profiles, i18n.
 
@@ -12,12 +12,12 @@
 | :--- | :--- |
 | **Full project name** | MINECRAFT_CT_AI |
 | **Mod ID** | `minecraft_ct_ai` |
-| **Version** | 1.0.2 |
-| **Game version** | Minecraft 26.3 (Java Edition) |
+| **Version** | 1.0.3 |
+| **Game version** | Minecraft 26.1 / 26.1.1 / 26.1.2 / 26.2 / 26.3 (one JAR) |
 | **Mod loader** | Fabric |
 | **Environment** | Client only |
 | **Language** | English |
-| **License** | MIT |
+| **License** | CREADDINSCART STUDIO terms of use + upstream MIT License |
 
 ---
 
@@ -78,10 +78,10 @@ A **"CT AI Setup"** button is permanently available in the bottom-right corner o
 
 ### 3.1 Installation
 
-1. Install Java 25 (required by Minecraft 26.3).
-2. Install Fabric Loader 0.19.5 or newer for Minecraft 26.3.
-3. Download Fabric API and place it in your `mods` folder.
-4. Place `MINECRAFT_CT_AI-1.0.2.jar` in the same `mods` folder.
+1. Install Java 25 (required by Minecraft 26.1 - 26.3).
+2. Install Fabric Loader 0.19.5 or newer for your Minecraft version.
+3. Download the Fabric API build matching your Minecraft version and place it in your `mods` folder.
+4. Place `MINECRAFT_CT_AI-1.0.3.jar` in the same `mods` folder — one JAR works on 26.1, 26.1.1, 26.1.2, 26.2 and 26.3.
 5. Launch the game with the Fabric profile.
 
 **Mods folder locations:**
@@ -220,12 +220,15 @@ Delete this file to restore defaults and trigger the setup screen again.
 
 | Tool | Version / Details |
 | :--- | :--- |
-| **Minecraft** | 26.3 (unobfuscated Mojang names) |
+| **Minecraft (build)** | 26.3 (unobfuscated Mojang names) |
+| **Minecraft (runs on)** | 26.1 / 26.1.1 / 26.1.2 / 26.2 / 26.3 (single JAR) |
 | **Java** | 25 |
 | **Gradle** | 9.6.0 (wrapper included) |
 | **Fabric Loom** | 1.17.21 |
 | **Fabric Loader** | 0.19.5 |
-| **Fabric API** | 0.160.7+26.3 |
+| **Fabric API** | 0.160.7+26.3 (compile only) |
+
+Cross-version compatibility: every `net.minecraft` symbol referenced by the mod exists in all five supported builds. Screen transitions use the stable `Minecraft.setScreenAndShow(Screen)` API, so the same bytecode runs everywhere. `fabric.mod.json` declares `minecraft = ">=26.1 <=26.3"`.
 
 ### 4.2 Project layout
 
@@ -263,7 +266,7 @@ cd MINECRAFT_CT_AI
 ./gradlew build
 ```
 
-- **Output JAR:** `build/libs/MINECRAFT_CT_AI-1.0.2.jar`
+- **Output JAR:** `build/libs/MINECRAFT_CT_AI-1.0.3.jar`
 - **Run a development client:** `./gradlew runClient`
 - **Regenerate the Gradle wrapper if needed:** `gradle wrapper --gradle-version 9.6.0`
 
@@ -311,7 +314,7 @@ HTTP requests never run on the render thread, so the game does not freeze while 
 - Client commands use `ClientCommands.literal` / `ClientCommands.argument`, and `ClientCommandRegistrationCallback.EVENT` now has two parameters: `(dispatcher, buildContext)`.
 - `FabricClientCommandSource` exposes `sendFeedback(Component)`, `sendError(Component)`, `getClient()`, `getPlayer()` and `getLevel()`.
 - Screens render custom text through `extractRenderState(GuiGraphicsExtractor,...)` with `graphics.text(...)` and `graphics.centeredText(...)`.
-- Screen changes use `minecraft.gui.setScreen(...)`, not `minecraft.setScreen(...)`.
+- Screen changes use `minecraft.setScreenAndShow(...)` — the stable API present in 26.1 - 26.3 that internally maps to `Minecraft.setScreen` (26.1) or `Gui.setScreen` (26.2+). Avoid `minecraft.gui.setScreen(...)`, since the `gui` field only exists in 26.2+.
 - `EditBox` uses the `(font, x, y, width, height, Component)` constructor.
 - Mixin `compatibilityLevel` is `JAVA_25`.
 
@@ -326,7 +329,7 @@ HTTP requests never run on the render thread, so the game does not freeze while 
 
 ## 5. PLANNED / UPCOMING FEATURES
 
-The following are planned for future releases and are NOT part of 1.0.2.
+The following are planned for future releases and are NOT part of 1.0.3.
 
 **Shipped in 1.0.2:** responsive / manually scalable setup screen, automatic model discovery, and agent mode with `/ctai_stop`.
 
@@ -372,6 +375,7 @@ The following are planned for future releases and are NOT part of 1.0.2.
 
 ## 6. CREDITS
 
-Designed and developed by **CREADDINSCART**.  
-Built for Minecraft 26.3 and the Fabric ecosystem.  
-MIT License - see the LICENSE file in the project root.
+**Author:** CREADDINSCART STUDIO CREADDINSCART  
+**Made with [CREADDINSCART STUDIO](https://www.shit.pub/studio/)**  
+Built for Minecraft 26.1 - 26.3 and the Fabric ecosystem.  
+Licensed under the CREADDINSCART STUDIO terms of use together with the upstream MIT License — see the LICENSE file in the project root.

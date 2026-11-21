@@ -20,14 +20,14 @@ public abstract class TitleScreenMixin extends Screen {
     @Inject(method = "init", at = @At("TAIL"))
     private void ctai$setupGate(CallbackInfo ci) {
         if (!CTAIConfig.get().completed) {
-            this.minecraft.execute(() -> this.minecraft.gui.setScreen(new SetupScreen(this)));
+            this.minecraft.execute(() -> this.minecraft.setScreenAndShow(new SetupScreen(this)));
         }
     }
 
     @Inject(method = "init", at = @At("TAIL"))
     private void ctai$addSetupButton(CallbackInfo ci) {
         this.addRenderableWidget(Button.builder(Component.literal("CT AI Setup"), button ->
-                        this.minecraft.gui.setScreen(new SetupScreen(this)))
+                        this.minecraft.setScreenAndShow(new SetupScreen(this)))
                 .bounds(this.width - 96, this.height - 28, 88, 20)
                 .build());
     }

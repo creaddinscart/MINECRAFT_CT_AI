@@ -7,12 +7,12 @@
 <p align="center"><strong>Your AI. In Minecraft. Hands on the controls.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.0.2-blue?style=flat-square" alt="version">
-  <img src="https://img.shields.io/badge/Minecraft-26.3-green?style=flat-square" alt="minecraft">
+  <img src="https://img.shields.io/badge/version-1.0.3-blue?style=flat-square" alt="version">
+  <img src="https://img.shields.io/badge/Minecraft-26.1--26.3-green?style=flat-square" alt="minecraft">
   <img src="https://img.shields.io/badge/Java-25-orange?style=flat-square" alt="java">
   <img src="https://img.shields.io/badge/loader-Fabric-red?style=flat-square" alt="fabric">
   <img src="https://img.shields.io/badge/environment-client--only-lightgrey?style=flat-square" alt="environment">
-  <img src="https://img.shields.io/badge/license-MIT-yellow?style=flat-square" alt="license">
+  <img src="https://img.shields.io/badge/license-STUDIO%20%2B%20MIT-yellow?style=flat-square" alt="license">
 </p>
 
 <p align="center">
@@ -123,16 +123,16 @@ All HTTP calls run on daemon worker threads — the render thread never blocks. 
 
 | Component | Version |
 | :--- | :--- |
-| Minecraft | Java Edition 26.3 |
+| Minecraft | Java Edition 26.1 / 26.1.1 / 26.1.2 / 26.2 / 26.3 (one JAR, all versions) |
 | Java | 25 |
 | Fabric Loader | 0.19.5+ |
-| Fabric API | 0.160.7+26.3 |
+| Fabric API | matching your Minecraft version |
 
 **Install**
 
-1. Install Java 25 and Fabric Loader 0.19.5+ for Minecraft 26.3.
-2. Put **Fabric API** in your `mods` folder.
-3. Put `MINECRAFT_CT_AI-1.0.2.jar` in the same folder.
+1. Install Java 25 and Fabric Loader 0.19.5+ for your Minecraft version (26.1 - 26.3).
+2. Put **Fabric API** (build matching your Minecraft version) in your `mods` folder.
+3. Put `MINECRAFT_CT_AI-1.0.3.jar` in the same folder — the same JAR works on 26.1, 26.1.1, 26.1.2, 26.2 and 26.3.
 4. Launch with the Fabric profile and complete the setup screen.
 
 | OS | Mods folder |
@@ -321,12 +321,14 @@ MINECRAFT_CT_AI/
 
 ## Developer guide
 
-**Toolchain:** Minecraft 26.3 (unobfuscated Mojang names) · Java 25 · Gradle 9.6.0 · Fabric Loom 1.17.21 · Fabric API 0.160.7+26.3
+**Toolchain:** Minecraft 26.3 build API (unobfuscated Mojang names) · Java 25 · Gradle 9.6.0 · Fabric Loom 1.17.21 · Fabric API 0.160.7+26.3
+
+The mod is compiled against one 26.x build but ships as a single JAR that loads on 26.1, 26.1.1, 26.1.2, 26.2 and 26.3. Cross-version safety comes from only calling symbols present in every supported build; in particular screen switching uses the stable `Minecraft.setScreenAndShow(Screen)` API, which internally adapts between the 26.1-style `Minecraft.setScreen(...)` and the 26.2+ `Gui.setScreen(...)`.
 
 ```bash
 git clone https://github.com/creaddinscart/minecraft_ct_ai.git
 cd minecraft_ct_ai/MINECRAFT_CT_AI
-./gradlew build       # -> build/libs/MINECRAFT_CT_AI-1.0.2.jar
+./gradlew build       # -> build/libs/MINECRAFT_CT_AI-1.0.3.jar
 ./gradlew runClient   # development client
 ```
 
@@ -345,7 +347,7 @@ cd minecraft_ct_ai/MINECRAFT_CT_AI
 **26.x API notes**
 - Unobfuscated Mojang names — import `net.minecraft.*` directly.
 - Client commands via `ClientCommands.literal/argument`; `ClientCommandRegistrationCallback.EVENT(dispatcher, buildContext)`.
-- Screens render through `extractRenderState(GuiGraphicsExtractor, ...)`; switch with `minecraft.gui.setScreen(...)`.
+- Screens render through `extractRenderState(GuiGraphicsExtractor, ...)`; switch with the cross-version `minecraft.setScreenAndShow(...)` (works on 26.1 - 26.3).
 - Dimension key uses `level().dimension().identifier()` (renamed from `location()`); send commands with `ClientPacketListener.sendCommand(String)`.
 - Mixin `compatibilityLevel` is `JAVA_25`.
 
@@ -355,7 +357,7 @@ cd minecraft_ct_ai/MINECRAFT_CT_AI
 
 ## Roadmap
 
-Features planned for future releases (not in 1.0.2):
+Features planned for future releases (not in 1.0.3):
 
 - **Experience** — chat history with scrollback, clickable suggested questions, per-bot profiles.
 - **Providers** — SSE streaming, vision/screenshot input, custom header editor, response-format templates.
@@ -368,6 +370,15 @@ Features planned for future releases (not in 1.0.2):
 ## Changelog
 
 <details open>
+<summary><b>v1.0.3 — multi-version release</b></summary>
+
+- Single JAR now supports Minecraft 26.1, 26.1.1, 26.1.2, 26.2 and 26.3.
+- Switched screen transitions to the stable `Minecraft.setScreenAndShow(Screen)` API for cross-build compatibility.
+- No feature changes from 1.0.2 — all AI, agent and GUI features remain identical.
+
+</details>
+
+<details>
 <summary><b>v1.0.2 — feature release</b></summary>
 
 - Responsive setup layout + manual UI scale (70–150%).
@@ -400,8 +411,14 @@ Full changelog: see `1.txt`.
 
 ## License & credits
 
-Designed and developed by **CREADDINSCART** for Minecraft 26.3 and the Fabric ecosystem.
+**Author:** CREADDINSCART STUDIO CREADDINSCART
 
-Released under the **MIT License** — see [`LICENSE`](LICENSE).
+**Made with [CREADDINSCART STUDIO](https://www.shit.pub/studio/)**
+
+Official legal document: [https://www.shit.pub/studio/](https://www.shit.pub/studio/)
+
+Designed and developed by **CREADDINSCART** for Minecraft 26.1 - 26.3 and the Fabric ecosystem.
+
+Released under the **CREADDINSCART STUDIO terms of use together with the upstream MIT License** — see [`LICENSE`](LICENSE). This repository is protected by and used under the CREADDINSCART STUDIO legal document; the STUDIO terms add attribution obligations on top of, and do not replace, the MIT License.
 
 > This mod does not include or pay for any AI service. You provide the provider and the key, and you stay in full control of your data, cost and choices.

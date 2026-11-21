@@ -283,7 +283,7 @@ public final class SetupScreen extends Screen {
 
         config.completed = true;
         CTAIConfig.save();
-        this.minecraft.gui.setScreen(this.parent);
+        this.minecraft.setScreenAndShow(this.parent);
     }
 
     private void testConnection() {
@@ -360,7 +360,7 @@ public final class SetupScreen extends Screen {
 
     @Override
     public void onClose() {
-        this.minecraft.gui.setScreen(this.parent);
+        this.minecraft.setScreenAndShow(this.parent);
     }
 
     @Override
