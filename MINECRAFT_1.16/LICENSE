@@ -1,0 +1,118 @@
+================================================================================
+MINECRAFT_CT_AI — LICENSE AND TERMS OF USE
+================================================================================
+
+--------------------------------------------------------------------------------
+PART 1 — STATEMENT
+--------------------------------------------------------------------------------
+
+This repository is protected by and used under the CREADDINSCART STUDIO legal
+document. Read our legal document at https://www.shit.pub/studio/
+
+The full terms of that legal document are incorporated into this LICENSE by
+reference and govern the use, editing and publication of this repository. The
+section below (Part 2) restates the binding conditions in plain form so that
+they travel with every copy of this software. Part 3 preserves the upstream
+MIT licence, which remains in full force.
+
+--------------------------------------------------------------------------------
+PART 2 — CREADDINSCART STUDIO TERMS OF USE (FOUR CONDITIONS)
+--------------------------------------------------------------------------------
+
+CREADDINSCART STUDIO is the editing workspace for the projects published on
+shit.pub. Using it means agreeing to all of the following. These are rules of
+use, not suggestions. Every version published through CREADDINSCART STUDIO
+carries four permanent obligations. They apply to the project page, the
+repository readme, the release notes and the software itself, and they survive
+later edits, forks and re-releases.
+
+Condition 1 — Author attribution
+  The author field names BOTH "CREADDINSCART STUDIO" and the human author, in
+  that order, as:  CREADDINSCART STUDIO <author name>
+  The author name must be a real, identifiable name or handle.
+  Goes in: package metadata, README, release notes, About box.
+
+Condition 2 — Made-with line
+  The project displays the words "Made with CREADDINSCART STUDIO" in a visible
+  place — header, footer, About screen or splash — at least once per published
+  version.
+  Goes in: interface, readme, project page.
+
+Condition 3 — Official link
+  The same place carries a working, clickable link or button to:
+  https://www.shit.pub/studio/
+  It must be clickable in the interface, not only written in a licence file.
+  Goes in: interface, readme, project page.
+
+Condition 4 — Code reuse
+  If you use CREADDINSCART STUDIO's editing library, its templates or any part
+  of its code — a module, a helper, a template, a single function or a constant
+  table — you state the source as "CREADDINSCART STUDIO" wherever the code is
+  used (source file header, dependency list, credits, readme). This holds
+  whether or not you publish through CREADDINSCART STUDIO, whether or not you
+  changed the code, and even when nothing is published. Rewriting copied code
+  does not remove the obligation.
+
+2.1 What you accept
+  - Every version you publish through CREADDINSCART STUDIO carries the four
+    conditions above, unchanged in meaning.
+  - You do not remove, hide, shrink or restyle the attribution to make it
+    illegible, and you do not move it behind a menu that is closed by default.
+  - You do not present CREADDINSCART STUDIO as your own product and you do not
+    rename it.
+  - You keep the upstream licence of the project you edited, including its
+    notice and source-availability terms (see Part 3).
+  - Our code is credited at the point where you use it, even when it is one
+    function and even when nothing is published.
+  - You are responsible for what you publish: no secrets, no personal data,
+    no code you have no right to redistribute.
+
+2.2 What you keep
+  - Copyright in your own edits.
+  - Control of your GitHub repository, its visibility, its history and its
+    releases.
+  - The right to stop using CREADDINSCART STUDIO at any time. Versions already
+    published keep their credit lines; nothing else is owed.
+
+2.3 What CREADDINSCART STUDIO does not do
+  - It does not take ownership of your repository or your code.
+  - It does not relicense an upstream project. If the upstream licence is
+    incompatible with your plan, the plan stops there.
+  - It does not publish anything without your confirmation; a repository is
+    only needed if you choose to push there.
+
+2.4 Relationship to the upstream licence
+  CREADDINSCART STUDIO adds attribution, not a new licence. It does not replace
+  or override the MIT licence in Part 3; the MIT permissions, notice requirement
+  and disclaimer remain in full force. A permissive upstream does not become
+  stricter because CREADDINSCART STUDIO was used, and a commercial version is
+  treated the same as a free one. If a condition is breached, that version is
+  not licensed to use the CREADDINSCART STUDIO attribution and must be
+  corrected or withdrawn; upstream licence obligations stand on their own and
+  are unaffected by the breach.
+
+--------------------------------------------------------------------------------
+PART 3 — UPSTREAM MIT LICENCE (RETAINED IN FULL)
+--------------------------------------------------------------------------------
+
+MIT License
+
+Copyright (c) 2026 CREADDINSCART
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

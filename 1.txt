@@ -9,7 +9,7 @@ ONE-LINE SUMMARY (exactly 256 characters, all current + planned features)
 
 Full project name : MINECRAFT_CT_AI
 Mod ID            : minecraft_ct_ai
-Version           : 1.0.3
+Version           : 1.0.2
 Game version      : Minecraft 26.1 / 26.1.1 / 26.1.2 / 26.2 / 26.3 (one JAR, all versions)
 Mod loader        : Fabric
 Environment       : Client only
@@ -20,13 +20,6 @@ License           : CREADDINSCART STUDIO terms of use + upstream MIT License
 --------------------------------------------------------------------------------
 0. CHANGELOG
 --------------------------------------------------------------------------------
-
-1.0.3 (multi-version release)
-  - A single JAR now supports Minecraft 26.1, 26.1.1, 26.1.2, 26.2 and 26.3.
-  - Screen transitions now use the stable Minecraft.setScreenAndShow(Screen)
-    API, which internally adapts between the 26.1-style Minecraft.setScreen()
-    and the 26.2+ Gui.setScreen(), so the same bytecode runs on every build.
-  - No feature changes from 1.0.2; AI, agent and GUI behaviour is unchanged.
 
 1.0.2 (feature release)
   - Rebuilt the setup screen with a fully responsive layout. Field widths,
@@ -52,6 +45,10 @@ License           : CREADDINSCART STUDIO terms of use + upstream MIT License
     agentAllowedCommands in the config file, plus an Agent ON/OFF toggle in
     the setup screen. Only commands whose first word is on the whitelist can
     be executed, which keeps the agent safe by default.
+  - A single JAR now supports Minecraft 26.1, 26.1.1, 26.1.2, 26.2 and 26.3.
+    Screen transitions use the stable Minecraft.setScreenAndShow(Screen) API,
+    which internally adapts between the 26.1-style Minecraft.setScreen() and
+    the 26.2+ Gui.setScreen(), so the same bytecode runs on every build.
 
 1.0.1 (bugfix release)
   - Fixed request URL construction. OpenAI Chat, OpenRouter, Groq, DeepSeek
@@ -177,7 +174,7 @@ the title screen so you can reopen and edit these settings at any time.
   b. Install Fabric Loader 0.19.5 or newer for your Minecraft version.
   c. Download the Fabric API build matching your Minecraft version and place
      it in your mods folder.
-  d. Place MINECRAFT_CT_AI-1.0.3.jar in the same mods folder. This single JAR
+  d. Place MINECRAFT_CT_AI-1.0.2.jar in the same mods folder. This single JAR
      works on 26.1, 26.1.1, 26.1.2, 26.2 and 26.3.
   e. Launch the game with the Fabric profile.
 
@@ -393,7 +390,7 @@ the title screen so you can reopen and edit these settings at any time.
   cd MINECRAFT_CT_AI
   ./gradlew build
 
-  Output JAR: build/libs/MINECRAFT_CT_AI-1.0.3.jar
+  Output JAR: build/libs/MINECRAFT_CT_AI-1.0.2.jar
 
   Run a development client:
   ./gradlew runClient
@@ -488,7 +485,7 @@ the title screen so you can reopen and edit these settings at any time.
 5. PLANNED / UPCOMING FEATURES
 --------------------------------------------------------------------------------
 
-The following are planned for future releases and are NOT part of 1.0.3.
+The following are planned for future releases and are NOT part of 1.0.2.
 
   Shipped in 1.0.2 (no longer planned):
       - Responsive / manually scalable setup screen.

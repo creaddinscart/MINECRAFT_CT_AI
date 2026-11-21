@@ -4,7 +4,7 @@
 
 <h1 align="center">MINECRAFT_CT_AI — v1.0.2</h1>
 
-<p align="center"><strong>Your AI. In Minecraft. Hands on the controls.</strong></p>
+<p align="center"><strong>One JAR. Five Minecraft versions. Your AI in the game.</strong></p>
 
 ---
 
@@ -14,35 +14,53 @@
 
 ---
 
+## What is new in v1.0.2
+
+**Multi-version support — one JAR, five versions.** The same `MINECRAFT_CT_AI-1.0.2.jar` loads and runs on:
+
+- Minecraft **26.1**
+- Minecraft **26.1.1**
+- Minecraft **26.1.2**
+- Minecraft **26.2**
+- Minecraft **26.3**
+
+No separate downloads, no version-specific builds. Drop the one JAR into your `mods` folder and it works across the whole 26.1 - 26.3 range.
+
+**How it works.** Screen transitions use the stable `Minecraft.setScreenAndShow(Screen)` API, which exists in every supported build and internally adapts between the older `Minecraft.setScreen(...)` (26.1 series) and the newer `Gui.setScreen(...)` (26.2+). Every other `net.minecraft` symbol the mod references was verified to be present in all five builds. `fabric.mod.json` declares `minecraft = ">=26.1 <=26.3"`.
+
+---
+
 ## What is MINECRAFT_CT_AI?
 
-A client-side Fabric mod for **Minecraft Java 26.3** that connects *your own* AI API to the game. Ask anything in chat with `/ctai`, or hand the controls to an AI agent that plays the game for you — through a strict command whitelist, always under your thumb with `/ctai_stop`.
+A client-side Fabric mod for **Minecraft Java 26.1 - 26.3** that connects *your own* AI API to the game. Ask anything in chat with `/ctai`, or hand the controls to an AI agent that plays the game for you — through a strict command whitelist, always under your thumb with `/ctai_stop`.
 
 Your keys stay on your machine. Your provider is your choice. You stay in control.
 
 ---
 
-## Highlights in v1.0.2
+## Highlights
 
 - **Agent Mode** — the AI operates Minecraft for you in real time. Describe what you want in plain English; it reads your position, dimension, health and weather, then runs whitelisted commands step by step. Type `/ctai_stop` any time to take over.
-- **Automatic model discovery** — the new `Scan Models` button queries your provider for every available model; `Models (n)` cycles through them into the Model field. Works with OpenAI-compatible hosts, Ollama, Gemini and Anthropic.
-- **Responsive setup screen** — the GUI now auto-fits any window size, plus a manual `UI Scale` control (70%–150%). No more overflowing fields on large or high-DPI screens.
+- **Automatic model discovery** — the `Scan Models` button queries your provider for every available model; `Models (n)` cycles through them into the Model field. Works with OpenAI-compatible hosts, Ollama, Gemini and Anthropic.
+- **Responsive setup screen** — the GUI auto-fits any window size, plus a manual `UI Scale` control (70%-150%). No more overflowing fields on large or high-DPI screens.
+- **9 compatibility modes** — OpenAI Chat, OpenAI Responses, Anthropic, Gemini, Ollama, DeepSeek, OpenRouter, Groq and Custom / OpenAI-compatible.
 - **More commands** — `/ctai ask <question>` for a plain answer that never touches the game, plus `/ctai stop` as an alias for the emergency brake.
 
 ---
 
-## Full feature set (current)
+## Full feature set
 
 | Area | What you get |
 | :--- | :--- |
 | Bring your own AI | Use your own API key and account — full control of data, cost and provider. |
 | 9 compatibility modes | OpenAI Chat, OpenAI Responses, Anthropic, Gemini, Ollama, DeepSeek, OpenRouter, Groq, Custom / OpenAI-compatible. |
+| Multi-version | One JAR runs on 26.1, 26.1.1, 26.1.2, 26.2 and 26.3. |
 | First-run setup gate | Configure bot identity and API details before the main menu is reachable. |
 | `/ctai` Q&A | Ask anything in chat; multi-line answers are split automatically. |
 | Agent mode | AI plays the game via a whitelisted command set, with game-context awareness, a step limit and a delay between steps. |
 | `/ctai_stop` | Instantly interrupt a running agent, even between steps. |
 | Model auto-scan | Discover all models from your host with one click. |
-| Responsive GUI | Auto-layout on any screen size + manual UI scale (70–150%). |
+| Responsive GUI | Auto-layout on any screen size + manual UI scale (70-150%). |
 | Key safety | Key validation and redaction — secrets are never printed to chat. |
 | Test Connection | Verify host, key and model with a minimal request. |
 | Client-only | No server install; works in singleplayer and on servers that allow client commands. |
@@ -61,23 +79,23 @@ SSE streaming replies, screenshot / vision input, chat history with scrollback, 
 
 ## Installation
 
-1. Install **Java 25** (required by Minecraft 26.3).
-2. Install **Fabric Loader 0.19.5+** for Minecraft 26.3.
-3. Add **Fabric API** to your `mods` folder.
-4. Add `MINECRAFT_CT_AI-1.0.2.jar` to the same folder.
+1. Install **Java 25** (required by Minecraft 26.1 - 26.3).
+2. Install **Fabric Loader 0.19.5+** for your Minecraft version.
+3. Add the **Fabric API** build matching your Minecraft version to your `mods` folder.
+4. Add `MINECRAFT_CT_AI-1.0.2.jar` to the same folder — this single JAR works on all of 26.1, 26.1.1, 26.1.2, 26.2 and 26.3.
 5. Launch with the Fabric profile and complete the setup screen.
 
 **Mods folder:** `%appdata%\.minecraft\mods` (Windows) · `~/Library/Application Support/minecraft/mods` (macOS) · `~/.minecraft/mods` (Linux)
 
-**Requirements:** Minecraft 26.3 · Java 25 · Fabric Loader 0.19.5+ · Fabric API
+**Requirements:** Minecraft 26.1 - 26.3 · Java 25 · Fabric Loader 0.19.5+ · Fabric API (matching build)
 
 ---
 
 ## Assets in this release
 
-- `MINECRAFT_CT_AI-1.0.2.jar` — the mod (client, 26.3)
+- `MINECRAFT_CT_AI-1.0.2.jar` — the mod (client, single JAR for 26.1 - 26.3)
 - `MINECRAFT_CT_AI-1.0.2-sources.jar` — sources
-- Full documentation: `1.txt`, `MINECRAFT_CT_AI_README.md`, `MINECRAFT_CT_AI_README_Lite.md`
+- Full documentation: `1.txt`, `MINECRAFT_CT_AI_README.md`
 - Logo: `branding/logo.png`
 - License: MIT — see `LICENSE`
 
@@ -93,4 +111,4 @@ SSE streaming replies, screenshot / vision input, chat history with scrollback, 
 
 ---
 
-Designed and developed by **CREADDINSCART** · MIT License
+**Author:** CREADDINSCART STUDIO CREADDINSCART · **Made with [CREADDINSCART STUDIO](https://www.shit.pub/studio/)** · CREADDINSCART STUDIO terms + MIT License

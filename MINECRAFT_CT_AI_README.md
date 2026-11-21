@@ -12,7 +12,7 @@
 | :--- | :--- |
 | **Full project name** | MINECRAFT_CT_AI |
 | **Mod ID** | `minecraft_ct_ai` |
-| **Version** | 1.0.3 |
+| **Version** | 1.0.2 |
 | **Game version** | Minecraft 26.1 / 26.1.1 / 26.1.2 / 26.2 / 26.3 (one JAR) |
 | **Mod loader** | Fabric |
 | **Environment** | Client only |
@@ -81,7 +81,7 @@ A **"CT AI Setup"** button is permanently available in the bottom-right corner o
 1. Install Java 25 (required by Minecraft 26.1 - 26.3).
 2. Install Fabric Loader 0.19.5 or newer for your Minecraft version.
 3. Download the Fabric API build matching your Minecraft version and place it in your `mods` folder.
-4. Place `MINECRAFT_CT_AI-1.0.3.jar` in the same `mods` folder — one JAR works on 26.1, 26.1.1, 26.1.2, 26.2 and 26.3.
+4. Place `MINECRAFT_CT_AI-1.0.2.jar` in the same `mods` folder — one JAR works on 26.1, 26.1.1, 26.1.2, 26.2 and 26.3.
 5. Launch the game with the Fabric profile.
 
 **Mods folder locations:**
@@ -266,7 +266,7 @@ cd MINECRAFT_CT_AI
 ./gradlew build
 ```
 
-- **Output JAR:** `build/libs/MINECRAFT_CT_AI-1.0.3.jar`
+- **Output JAR:** `build/libs/MINECRAFT_CT_AI-1.0.2.jar`
 - **Run a development client:** `./gradlew runClient`
 - **Regenerate the Gradle wrapper if needed:** `gradle wrapper --gradle-version 9.6.0`
 
@@ -329,7 +329,7 @@ HTTP requests never run on the render thread, so the game does not freeze while 
 
 ## 5. PLANNED / UPCOMING FEATURES
 
-The following are planned for future releases and are NOT part of 1.0.3.
+The following are planned for future releases and are NOT part of 1.0.2.
 
 **Shipped in 1.0.2:** responsive / manually scalable setup screen, automatic model discovery, and agent mode with `/ctai_stop`.
 

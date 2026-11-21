@@ -7,7 +7,7 @@
 <p align="center"><strong>Your AI. In Minecraft. Hands on the controls.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.0.3-blue?style=flat-square" alt="version">
+  <img src="https://img.shields.io/badge/version-1.0.2-blue?style=flat-square" alt="version">
   <img src="https://img.shields.io/badge/Minecraft-26.1--26.3-green?style=flat-square" alt="minecraft">
   <img src="https://img.shields.io/badge/Java-25-orange?style=flat-square" alt="java">
   <img src="https://img.shields.io/badge/loader-Fabric-red?style=flat-square" alt="fabric">
@@ -132,7 +132,7 @@ All HTTP calls run on daemon worker threads — the render thread never blocks. 
 
 1. Install Java 25 and Fabric Loader 0.19.5+ for your Minecraft version (26.1 - 26.3).
 2. Put **Fabric API** (build matching your Minecraft version) in your `mods` folder.
-3. Put `MINECRAFT_CT_AI-1.0.3.jar` in the same folder — the same JAR works on 26.1, 26.1.1, 26.1.2, 26.2 and 26.3.
+3. Put `MINECRAFT_CT_AI-1.0.2.jar` in the same folder — the same JAR works on 26.1, 26.1.1, 26.1.2, 26.2 and 26.3.
 4. Launch with the Fabric profile and complete the setup screen.
 
 | OS | Mods folder |
@@ -328,7 +328,7 @@ The mod is compiled against one 26.x build but ships as a single JAR that loads 
 ```bash
 git clone https://github.com/creaddinscart/minecraft_ct_ai.git
 cd minecraft_ct_ai/MINECRAFT_CT_AI
-./gradlew build       # -> build/libs/MINECRAFT_CT_AI-1.0.3.jar
+./gradlew build       # -> build/libs/MINECRAFT_CT_AI-1.0.2.jar
 ./gradlew runClient   # development client
 ```
 
@@ -357,7 +357,7 @@ cd minecraft_ct_ai/MINECRAFT_CT_AI
 
 ## Roadmap
 
-Features planned for future releases (not in 1.0.3):
+Features planned for future releases (not in 1.0.2):
 
 - **Experience** — chat history with scrollback, clickable suggested questions, per-bot profiles.
 - **Providers** — SSE streaming, vision/screenshot input, custom header editor, response-format templates.
@@ -370,15 +370,6 @@ Features planned for future releases (not in 1.0.3):
 ## Changelog
 
 <details open>
-<summary><b>v1.0.3 — multi-version release</b></summary>
-
-- Single JAR now supports Minecraft 26.1, 26.1.1, 26.1.2, 26.2 and 26.3.
-- Switched screen transitions to the stable `Minecraft.setScreenAndShow(Screen)` API for cross-build compatibility.
-- No feature changes from 1.0.2 — all AI, agent and GUI features remain identical.
-
-</details>
-
-<details>
 <summary><b>v1.0.2 — feature release</b></summary>
 
 - Responsive setup layout + manual UI scale (70–150%).
@@ -386,6 +377,7 @@ Features planned for future releases (not in 1.0.3):
 - Agent mode with game context, command whitelist, step limit and delay.
 - `/ctai_stop` and `/ctai stop`; `/ctai ask` for plain answers.
 - Agent config settings and setup-screen toggle.
+- Single JAR supports Minecraft 26.1, 26.1.1, 26.1.2, 26.2 and 26.3, via the stable `Minecraft.setScreenAndShow(Screen)` API for cross-build screen transitions.
 
 </details>
 
