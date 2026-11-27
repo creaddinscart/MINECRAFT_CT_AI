@@ -38,7 +38,7 @@
 
 ## What it is
 
-**MINECRAFT_CT_AI** connects your own AI API (OpenAI, Anthropic, Gemini, Ollama, DeepSeek, OpenRouter, Groq, or any OpenAI-compatible endpoint) directly to Minecraft 1.16.5. You supply the provider, key, host and model; the mod gives you a chat command and an AI that can **operate the game itself**.
+**MINECRAFT_CT_AI** connects your own AI API (OpenAI, Anthropic, Gemini, Ollama, a local model server, DeepSeek, OpenRouter, Groq, or any OpenAI-compatible endpoint) directly to Minecraft 1.16.5. You supply the provider, key, host and model — or let the mod **detect a local model server automatically**. The mod gives you a chat command and an AI that can **operate the game itself**.
 
 - **Client-side only** — no server install; works in singleplayer and on servers that allow client commands.
 - **You own the AI** — no bundled service; your account, key, data and provider choice.
@@ -49,7 +49,7 @@
 
 ## Features
 
-- **9 compatibility modes** — OpenAI Chat / Responses, Anthropic, Gemini, Ollama, DeepSeek, OpenRouter, Groq, Custom.
+- **10 compatibility modes** — OpenAI Chat / Responses, Anthropic, Gemini, Ollama, **Local Model Server**, DeepSeek, OpenRouter, Groq, Custom. `Detect Local` finds offline local models with one click.
 - **`/ctai` Q&A** — ask anything; answers print to chat, multi-line split automatically.
 - **Model auto-scan** — `Scan Models` discovers all models from the host; `Models (n)` cycles them into the field.
 - **Agent mode** — AI reads game context and runs whitelisted commands toward a goal you describe.
@@ -93,14 +93,14 @@ The title screen is replaced by the **CREADDINSCART AI BOT** setup screen; the m
 | Field | Meaning |
 | :--- | :--- |
 | Bot Name | Name shown on every reply (default `CREADDINSCART AI BOT`) |
-| API Key | Provider key (not needed for Ollama / Custom) |
+| API Key | Provider key (not needed for Ollama / Local / Custom) |
 | API Host | Base URL, e.g. `https://api.openai.com` |
 | Model | Model id; blank loads the mode default |
 | System Prompt | Bot behaviour instructions |
 | Temperature | `0.0–2.0` (default `0.7`) |
 | Max Tokens | Max answer length (default `512`) |
 | Timeout (s) | Reply wait time (default `30`, min `5`) |
-| Compatibility | Click to cycle the nine modes |
+| Compatibility | Click to cycle the ten modes |
 
 **Extra controls:** `Scan Models` fetch models · `Models (n)` cycle models · `Test Connection` verify · `UI xx%` scale (70–150%) · `Agent ON/OFF` toggle.
 
@@ -151,12 +151,13 @@ Describe a goal in plain English:
 | Anthropic Messages | `https://api.anthropic.com` | `/v1/messages` |
 | Google Gemini | `https://generativelanguage.googleapis.com` | `generateContent` |
 | Ollama | `http://localhost:11434` | `/api/chat` |
+| Local Model Server | `http://127.0.0.1:1234` | `/v1/chat/completions` |
 | DeepSeek | `https://api.deepseek.com` | `/chat/completions` |
 | OpenRouter | `https://openrouter.ai/api` | `/chat/completions` |
 | Groq | `https://api.groq.com/openai` | `/chat/completions` |
 | Custom / OpenAI-compatible | `http://localhost:8000/v1` | `/chat/completions` |
 
-Model scan endpoints: OpenAI-compatible → `GET /v1/models`; Ollama → `/api/tags`; Gemini → `/v1beta/models`; Anthropic → `/v1/models`.
+`Detect Local` scans LM Studio (1234), llama.cpp / LocalAI (8080), Text Generation WebUI (5000), Ollama (11434) and generic servers (8000), then auto-fills host, mode and model — fully offline, no key. Model scan endpoints: OpenAI-compatible (incl. Local) → `GET /v1/models`; Ollama → `/api/tags`; Gemini → `/v1beta/models`; Anthropic → `/v1/models`.
 
 ---
 

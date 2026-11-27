@@ -10,7 +10,7 @@
 
 ## The release in one line
 
-> MINECRAFT_CT_AI: your AI in Minecraft. 9 providers, setup, auto model scan, /ctai Q&A, scalable GUI, safe keys, whitelisted Agent plays for you (/ctai_stop). Upcoming: SSE, vision, chat history, hotkey, TTS, book/sign, Mod Menu, encryption, profiles, i18n.
+> MINECRAFT_CT_AI: your AI in Minecraft. 10 providers incl. one-click local model detection, setup, auto scan, /ctai Q&A, scalable GUI, safe keys, whitelisted Agent plays for you (/ctai_stop). Upcoming: SSE, vision, chat history, hotkey, TTS, Mod Menu, i18n.
 
 ---
 
@@ -25,6 +25,8 @@
 - Minecraft **26.3**
 
 No separate downloads, no version-specific builds. Drop the one JAR into your `mods` folder and it works across the whole 26.1 - 26.3 range.
+
+**Local model support — run AI fully offline.** A new `LOCAL` compatibility mode and a `Detect Local` button scan common local ports (LM Studio 1234, llama.cpp / LocalAI 8080, Text Generation WebUI 5000, Ollama 11434, generic OpenAI-compatible 8000) and auto-fill the host, mode and first model found. No API key and no internet connection required. Existing Ollama / Custom modes remain for manual setup.
 
 **How it works.** Screen transitions use the stable `Minecraft.setScreenAndShow(Screen)` API, which exists in every supported build and internally adapts between the older `Minecraft.setScreen(...)` (26.1 series) and the newer `Gui.setScreen(...)` (26.2+). Every other `net.minecraft` symbol the mod references was verified to be present in all five builds. `fabric.mod.json` declares `minecraft = ">=26.1 <=26.3"`.
 
@@ -43,7 +45,8 @@ Your keys stay on your machine. Your provider is your choice. You stay in contro
 - **Agent Mode** — the AI operates Minecraft for you in real time. Describe what you want in plain English; it reads your position, dimension, health and weather, then runs whitelisted commands step by step. Type `/ctai_stop` any time to take over.
 - **Automatic model discovery** — the `Scan Models` button queries your provider for every available model; `Models (n)` cycles through them into the Model field. Works with OpenAI-compatible hosts, Ollama, Gemini and Anthropic.
 - **Responsive setup screen** — the GUI auto-fits any window size, plus a manual `UI Scale` control (70%-150%). No more overflowing fields on large or high-DPI screens.
-- **9 compatibility modes** — OpenAI Chat, OpenAI Responses, Anthropic, Gemini, Ollama, DeepSeek, OpenRouter, Groq and Custom / OpenAI-compatible.
+- **10 compatibility modes** — OpenAI Chat, OpenAI Responses, Anthropic, Gemini, Ollama, Local Model Server, DeepSeek, OpenRouter, Groq and Custom / OpenAI-compatible.
+- **Local models, one click** — `Detect Local` finds a running local server and configures everything; runs fully offline with no key.
 - **More commands** — `/ctai ask <question>` for a plain answer that never touches the game, plus `/ctai stop` as an alias for the emergency brake.
 
 ---
@@ -53,7 +56,8 @@ Your keys stay on your machine. Your provider is your choice. You stay in contro
 | Area | What you get |
 | :--- | :--- |
 | Bring your own AI | Use your own API key and account — full control of data, cost and provider. |
-| 9 compatibility modes | OpenAI Chat, OpenAI Responses, Anthropic, Gemini, Ollama, DeepSeek, OpenRouter, Groq, Custom / OpenAI-compatible. |
+| 10 compatibility modes | OpenAI Chat, OpenAI Responses, Anthropic, Gemini, Ollama, Local Model Server, DeepSeek, OpenRouter, Groq, Custom / OpenAI-compatible. |
+| Local model support | One-click detection of LM Studio / llama.cpp / LocalAI / Ollama / WebUI / generic servers; fully offline, no key. |
 | Multi-version | One JAR runs on 26.1, 26.1.1, 26.1.2, 26.2 and 26.3. |
 | First-run setup gate | Configure bot identity and API details before the main menu is reachable. |
 | `/ctai` Q&A | Ask anything in chat; multi-line answers are split automatically. |

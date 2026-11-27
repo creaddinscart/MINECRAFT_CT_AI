@@ -96,7 +96,8 @@ Key points
     commands from client-side mods.
   - A first-run setup screen must be completed before the game main menu is
     available. This guarantees the bot identity and API details are set first.
-  - Supports nine compatibility modes covering the most common AI APIs.
+  - Supports ten compatibility modes covering the most common AI APIs,
+    including automatic detection of local model servers.
   - Optional AGENT MODE lets the AI operate the game through safe, whitelisted
     Minecraft commands, with `/ctai_stop` as an emergency brake.
   - All API traffic goes directly from your game to the host you configure.
@@ -144,7 +145,7 @@ saved. Fill in the fields in this order:
      Seconds to wait for a reply. Default 30. Minimum 5.
 
   9. Compatibility
-     Click the button repeatedly to cycle through the nine supported modes.
+     Click the button repeatedly to cycle through the ten supported modes.
      The selected mode is shown directly on the button.
 
   Extra controls
@@ -263,6 +264,7 @@ the title screen so you can reopen and edit these settings at any time.
   Anthropic Messages         https://api.anthropic.com                     /v1/messages
   Google Gemini              https://generativelanguage.googleapis.com    /v1beta/models/...
   Ollama                     http://localhost:11434                        /api/chat
+  Local Model Server         http://127.0.0.1:1234                         /v1/chat/completions
   OpenRouter                 https://openrouter.ai/api                     /chat/completions
   Groq                       https://api.groq.com/openai                   /chat/completions
   Custom / OpenAI-compatible http://localhost:8000/v1                      /chat/completions
@@ -310,7 +312,7 @@ the title screen so you can reopen and edit these settings at any time.
 
   Valid values for compatibilityMode:
     OPENAI_CHAT, OPENAI_RESPONSES, ANTHROPIC_MESSAGES, GOOGLE_GEMINI,
-    OLLAMA, DEEPSEEK, OPENROUTER, GROQ, CUSTOM
+    OLLAMA, LOCAL, DEEPSEEK, OPENROUTER, GROQ, CUSTOM
 
   New in 1.0.2:
     uiScale            UI scale factor (0.70 - 1.50).

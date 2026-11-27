@@ -6,7 +6,7 @@
 
 <p align="center"><strong>Bring your own AI into Minecraft - Java Edition 26.1 - 26.3 (Fabric)</strong></p>
 
-> **One line (256 chars):** MINECRAFT_CT_AI: your AI in Minecraft. 9 providers, setup, auto model scan, /ctai Q&A, scalable GUI, safe keys, whitelisted Agent plays for you (/ctai_stop). Upcoming: SSE, vision, chat history, hotkey, TTS, book/sign, Mod Menu, encryption, profiles, i18n.
+> **One line (256 chars):** MINECRAFT_CT_AI: your AI in Minecraft. 10 providers incl. one-click local model detection, setup, auto scan, /ctai Q&A, scalable GUI, safe keys, whitelisted Agent plays for you (/ctai_stop). Upcoming: SSE, vision, chat history, hotkey, TTS, Mod Menu, i18n.
 
 | Metadata | Value |
 | :--- | :--- |
@@ -36,7 +36,7 @@ Ask anything in chat and the answer is printed back into your chat window. The m
 - Runs entirely on the client. No server install is required.
 - Works in singleplayer and on any multiplayer server that allows chat commands from client-side mods.
 - A first-run setup screen must be completed before the game main menu is available. This guarantees the bot identity and API details are set first.
-- Supports nine compatibility modes covering the most common AI APIs.
+- Supports ten compatibility modes covering the most common AI APIs, including automatic detection of local model servers.
 - Optional agent mode lets the AI operate the game via safe, whitelisted commands (`/ctai_stop` to stop).
 - All API traffic goes directly from your game to the host you configure. Your key is stored locally on your machine only.
 
@@ -49,7 +49,7 @@ When the game starts for the first time, the title screen is replaced by the **C
 1. **Bot Name**  
    The display name for your assistant. Default: `CREADDINSCART AI BOT`. This name is shown in every chat reply.
 2. **API Key**  
-   Paste the secret key from your AI provider. Required for hosted modes (OpenAI, Anthropic, Gemini, OpenRouter, Groq). Not required for Ollama or Custom local endpoints.
+   Paste the secret key from your AI provider. Required for hosted modes (OpenAI, Anthropic, Gemini, OpenRouter, Groq). Not required for Ollama, Local or Custom endpoints.
 3. **API Host**  
    The base URL of the provider, without a trailing path. Example: `https://api.openai.com`  
    The mod appends the correct endpoint path for the selected mode.
@@ -64,9 +64,9 @@ When the game starts for the first time, the title screen is replaced by the **C
 8. **Timeout (s)**  
    Seconds to wait for a reply. Default `30`. Minimum `5`.
 9. **Compatibility**  
-   Click the button repeatedly to cycle through the nine supported modes. The selected mode is shown directly on the button.
+   Click the button repeatedly to cycle through the ten supported modes. The selected mode is shown directly on the button.
 
-**Extra controls:** `Scan Models` discovers models from your host; `Models (n)` cycles through discovered models; `Test Connection` verifies host/key/model; `UI xx%` cycles interface scale (70-150%); `Agent ON/OFF` toggles agent mode. The setup screen auto-fits any window size.
+**Extra controls:** `Detect Local` scans common local ports and auto-configures host/mode/model for offline local models; `Scan Models` discovers models from your host; `Models (n)` cycles through discovered models; `Test Connection` verifies host/key/model; `UI xx%` cycles interface scale (70-150%); `Agent ON/OFF` toggles agent mode. The setup screen auto-fits any window size.
 
 Click **"Save & Continue"** to validate and store the configuration, then the game main menu opens. **"Cancel"** returns to the title screen; setup will be required again until a valid configuration is saved.
 
@@ -143,6 +143,7 @@ Each step the mod captures your position, dimension, health and weather, asks th
 | Anthropic Messages | `https://api.anthropic.com` | `/v1/messages` |
 | Google Gemini | `https://generativelanguage.googleapis.com` | `/v1beta/models/...` |
 | Ollama | `http://localhost:11434` | `/api/chat` |
+| Local Model Server | `http://127.0.0.1:1234` | `/v1/chat/completions` |
 | DeepSeek | `https://api.deepseek.com` | `/chat/completions` |
 | OpenRouter | `https://openrouter.ai/api` | `/chat/completions` |
 | Groq | `https://api.groq.com/openai` | `/chat/completions` |
@@ -150,11 +151,12 @@ Each step the mod captures your position, dimension, health and weather, asks th
 
 **Notes:**
 
-- OpenAI-compatible local servers (LM Studio, llama.cpp, vLLM, LocalAI, KoboldCpp) should use `"Custom / OpenAI-compatible"` with their base URL.
+- **Local Model Server** is an OpenAI-compatible offline mode. Click `Detect Local` to scan LM Studio (1234), llama.cpp / LocalAI (8080), Text Generation WebUI (5000), Ollama native (11434) and generic servers (8000); the mod auto-fills host, mode and the first model. No key or internet needed.
+- Other OpenAI-compatible local servers (vLLM, KoboldCpp) can use `"Custom / OpenAI-compatible"` with their base URL.
 - Gemini passes the key as a `"key"` query parameter, as required by Google.
 - Anthropic sends the `x-api-key` and `anthropic-version` headers.
 - OpenRouter and Groq send the standard `Authorization: Bearer` header.
-- Ollama needs no API key and works fully offline once a model is pulled.
+- Ollama and Local need no API key and work fully offline.
 
 ### 3.6 Configuration file
 
@@ -189,7 +191,7 @@ Settings are stored at: `<minecraft config dir>/minecraft_ct_ai.json`
 }
 ```
 
-**Valid values for `compatibilityMode`:** `OPENAI_CHAT`, `OPENAI_RESPONSES`, `ANTHROPIC_MESSAGES`, `GOOGLE_GEMINI`, `OLLAMA`, `DEEPSEEK`, `OPENROUTER`, `GROQ`, `CUSTOM`
+**Valid values for `compatibilityMode`:** `OPENAI_CHAT`, `OPENAI_RESPONSES`, `ANTHROPIC_MESSAGES`, `GOOGLE_GEMINI`, `OLLAMA`, `LOCAL`, `DEEPSEEK`, `OPENROUTER`, `GROQ`, `CUSTOM`
 
 Delete this file to restore defaults and trigger the setup screen again.
 

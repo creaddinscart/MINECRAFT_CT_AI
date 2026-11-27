@@ -44,14 +44,14 @@
 
 ## What it is
 
-**MINECRAFT_CT_AI** connects your own AI API (OpenAI, Anthropic, Gemini, Ollama, DeepSeek, OpenRouter, Groq, or any OpenAI-compatible endpoint) directly to Minecraft. You supply the provider, key, host and model; the mod gives you a chat command and, optionally, an AI that can **operate the game itself**.
+**MINECRAFT_CT_AI** connects your own AI API (OpenAI, Anthropic, Gemini, Ollama, DeepSeek, OpenRouter, Groq, a local model server, or any OpenAI-compatible endpoint) directly to Minecraft. You supply the provider, key, host and model — or let the mod **detect a local model server automatically**. It gives you a chat command and, optionally, an AI that can **operate the game itself**.
 
 - **Runs entirely on the client.** No server install. Works in singleplayer and on servers that allow client-side commands.
 - **You own the AI.** No bundled or paid service — your account, your key, your data, your provider choice.
 - **First-run setup gate.** Bot identity and API details are configured before the main menu is reachable.
 - **Two modes in one mod:** plain Q&A, and an agent that plays the game through a strict command whitelist.
 
-> MINECRAFT_CT_AI: your AI in Minecraft. 9 providers, setup, auto model scan, /ctai Q&A, scalable GUI, safe keys, whitelisted Agent plays for you (/ctai_stop). Upcoming: SSE, vision, chat history, hotkey, TTS, book/sign, Mod Menu, encryption, profiles, i18n.
+> MINECRAFT_CT_AI: your AI in Minecraft. 10 providers incl. one-click local model detection, setup, auto scan, /ctai Q&A, scalable GUI, safe keys, whitelisted Agent plays for you (/ctai_stop). Upcoming: SSE, vision, chat history, hotkey, TTS, Mod Menu, i18n.
 
 ---
 
@@ -59,7 +59,7 @@
 
 | Typical AI mod | MINECRAFT_CT_AI |
 | :--- | :--- |
-| Fixed, hosted AI you cannot change | Bring **your own** key and provider — 9 compatibility modes |
+| Fixed, hosted AI you cannot change | Bring **your own** key and provider — 10 compatibility modes, including local |
 | Chat only | Chat **plus** an AI that operates the game in real time |
 | Unbounded actions | Every agent command passes a **whitelist**; `/ctai_stop` halts instantly |
 | Static GUI that breaks on scaling | **Responsive** layout + manual UI scale (70–150%) |
@@ -71,8 +71,9 @@
 ## Features
 
 ### AI & providers
-- **9 compatibility modes** — OpenAI Chat, OpenAI Responses, Anthropic Messages, Google Gemini, Ollama, DeepSeek, OpenRouter, Groq, Custom / OpenAI-compatible.
+- **10 compatibility modes** — OpenAI Chat, OpenAI Responses, Anthropic Messages, Google Gemini, Ollama, **Local Model Server**, DeepSeek, OpenRouter, Groq, Custom / OpenAI-compatible.
 - **Bring your own API** — point the mod at any host; all traffic goes straight from your game to that host.
+- **Local models, one click** — `Detect Local` scans common ports (LM Studio 1234, llama.cpp / LocalAI 8080, Ollama 11434, Text Generation WebUI 5000, generic 8000) and auto-fills host, mode and model. No API key or internet needed.
 - **Model auto-scan** — `GET <host>/v1/models` (or the Ollama/Gemini/Anthropic equivalent) discovers every available model; a button cycles them into the Model field.
 - **Connection test** — verify host, key and model with a minimal request, showing only a masked key.
 
@@ -150,19 +151,20 @@ The title screen is replaced by the **CREADDINSCART AI BOT** setup screen; the m
 | Field | Meaning |
 | :--- | :--- |
 | Bot Name | Name shown on every reply (default `CREADDINSCART AI BOT`) |
-| API Key | Your provider key (not needed for Ollama / Custom) |
+| API Key | Your provider key (not needed for Ollama / Local / Custom) |
 | API Host | Provider base URL, e.g. `https://api.openai.com` |
 | Model | Model id; leave blank for the mode default |
 | System Prompt | Bot behaviour instructions |
 | Temperature | Randomness, `0.0–2.0` (default `0.7`) |
 | Max Tokens | Max answer length (default `512`) |
 | Timeout (s) | Reply wait time (default `30`, min `5`) |
-| Compatibility | Click to cycle the nine modes |
+| Compatibility | Click to cycle the ten modes |
 
 **Extra controls**
 
 | Button | Action |
 | :--- | :--- |
+| `Detect Local` | Find local model servers and auto-fill host, mode and model |
 | `Scan Models` | Fetch all available models from the host |
 | `Models (n)` | Cycle discovered models into the Model field |
 | `Test Connection` | Verify host, key and model |
@@ -220,7 +222,7 @@ Only those command names can ever run; world-changing commands are deliberately 
 
 | Mode | Model-list endpoint |
 | :--- | :--- |
-| OpenAI-compatible (Chat / Responses / OpenRouter / Groq / DeepSeek / Custom) | `GET <host>/v1/models` |
+| OpenAI-compatible (Chat / Responses / OpenRouter / Groq / DeepSeek / Custom / Local) | `GET <host>/v1/models` |
 | Ollama | `GET <host>/api/tags` |
 | Google Gemini | `GET <host>/v1beta/models` |
 | Anthropic | `GET <host>/v1/models` |
@@ -238,12 +240,13 @@ Only those command names can ever run; world-changing commands are deliberately 
 | Anthropic Messages | `https://api.anthropic.com` | `/v1/messages` |
 | Google Gemini | `https://generativelanguage.googleapis.com` | `generateContent` |
 | Ollama | `http://localhost:11434` | `/api/chat` |
+| Local Model Server | `http://127.0.0.1:1234` | `/v1/chat/completions` |
 | DeepSeek | `https://api.deepseek.com` | `/chat/completions` |
 | OpenRouter | `https://openrouter.ai/api` | `/chat/completions` |
 | Groq | `https://api.groq.com/openai` | `/chat/completions` |
 | Custom / OpenAI-compatible | `http://localhost:8000/v1` | `/chat/completions` |
 
-Notes: OpenAI-compatible local servers (LM Studio, llama.cpp, vLLM, LocalAI, KoboldCpp) use **Custom** with their base URL. Gemini passes the key as a `key` query parameter. Anthropic sends `x-api-key` + `anthropic-version`. Ollama needs no key and works fully offline.
+Notes: **Local Model Server** is an OpenAI-compatible mode for offline local inference. Click `Detect Local` and the mod probes common ports — LM Studio (1234), llama.cpp / LocalAI (8080), Text Generation WebUI (5000), Ollama native (11434) and generic OpenAI-compatible servers (8000) — then auto-fills the host, mode and first model; no key or internet required. You can also point **Custom** at any other local base URL (vLLM, KoboldCpp). Gemini passes the key as a `key` query parameter. Anthropic sends `x-api-key` + `anthropic-version`. Ollama and Local need no key and work fully offline.
 
 ---
 

@@ -82,19 +82,21 @@ public final class SetupScreen extends Screen {
         rowY += this.layout.rowSpacing + 4;
 
         List<Button> tools = addButtonRow(rowY,
-                new String[]{"Scan Models", "Models", "Test Connection", scaleLabel()},
+                new String[]{"Detect Local", "Scan Models", "Models", "Test Connection", scaleLabel()},
                 i -> {
                     if (i == 0) {
-                        scanModels();
+                        detectLocal();
                     } else if (i == 1) {
-                        cycleModel();
+                        scanModels();
                     } else if (i == 2) {
+                        cycleModel();
+                    } else if (i == 3) {
                         testConnection();
                     } else {
                         cycleScale();
                     }
                 }, 132);
-        this.uiScaleButton = tools.get(3);
+        this.uiScaleButton = tools.get(4);
         rowY += 24;
 
         addButtonRow(rowY, new String[]{"Save & Continue", "Cancel"},
@@ -300,6 +302,45 @@ public final class SetupScreen extends Screen {
                 this.minecraft.execute(() -> setStatus(message, true));
             }
         }, "ctai-test-worker");
+        worker.setDaemon(true);
+        worker.start();
+    }
+
+    private void detectLocal() {
+        readFields();
+        final int timeout = CTAIConfig.get().timeoutSeconds;
+        setStatus("Scanning local model servers on common ports ...", false);
+        Thread worker = new Thread(() -> {
+            try {
+                final List<AiClient.LocalServer> servers = AiClient.detectLocalServers(timeout);
+                this.minecraft.execute(() -> {
+                    if (servers.isEmpty()) {
+                        setStatus("No local server found. Start LM Studio / Ollama / llama.cpp and retry.", true);
+                        return;
+                    }
+                    AiClient.LocalServer chosen = servers.get(0);
+                    CTAIConfig cfg = CTAIConfig.get();
+                    cfg.apiHost = chosen.host;
+                    cfg.compatibilityMode = chosen.mode.name();
+                    cfg.availableModels = chosen.models;
+                    cfg.model = chosen.models.get(0);
+                    cfg.apiKey = "";
+                    CTAIConfig.save();
+
+                    this.compatibilityIndex = chosen.mode.ordinal();
+                    this.apiHostField.setValue(chosen.host);
+                    this.apiKeyField.setValue("");
+                    this.modelField.setValue(chosen.models.get(0));
+
+                    String msg = "Found " + servers.size() + " local server(s). Using "
+                            + chosen.mode.getDisplayName() + " with " + chosen.models.size() + " models.";
+                    setStatus(msg, false);
+                });
+            } catch (Exception e) {
+                String message = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
+                this.minecraft.execute(() -> setStatus(message, true));
+            }
+        }, "ctai-local-detect-worker");
         worker.setDaemon(true);
         worker.start();
     }

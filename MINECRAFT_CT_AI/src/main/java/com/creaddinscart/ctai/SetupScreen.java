@@ -30,6 +30,7 @@ public final class SetupScreen extends Screen {
 
     private Button compatibilityButton;
     private Button agentButton;
+    private Button detectButton;
     private Button scanButton;
     private Button modelButton;
     private Button testButton;
@@ -85,22 +86,25 @@ public final class SetupScreen extends Screen {
         rowY += this.layout.rowSpacing + 4;
 
         List<Button> tools = addButtonRow(rowY,
-                new String[]{"Scan Models", "Models", "Test Connection", scaleLabel()},
+                new String[]{"Detect Local", "Scan Models", "Models", "Test Connection", scaleLabel()},
                 i -> {
                     if (i == 0) {
-                        scanModels();
+                        detectLocal();
                     } else if (i == 1) {
-                        cycleModel();
+                        scanModels();
                     } else if (i == 2) {
+                        cycleModel();
+                    } else if (i == 3) {
                         testConnection();
                     } else {
                         cycleScale();
                     }
                 }, 132);
-        this.scanButton = tools.get(0);
-        this.modelButton = tools.get(1);
-        this.testButton = tools.get(2);
-        this.scaleButton = tools.get(3);
+        this.detectButton = tools.get(0);
+        this.scanButton = tools.get(1);
+        this.modelButton = tools.get(2);
+        this.testButton = tools.get(3);
+        this.scaleButton = tools.get(4);
         rowY += 24;
 
         addButtonRow(rowY, new String[]{"Save & Continue", "Cancel"},
@@ -315,6 +319,47 @@ public final class SetupScreen extends Screen {
         worker.start();
     }
 
+    private void detectLocal() {
+        readFields();
+        CTAIConfig config = CTAIConfig.get();
+        int timeout = config.timeoutSeconds;
+        setStatus("Scanning local model servers on common ports ...", false);
+        Thread worker = new Thread(() -> {
+            try {
+                java.util.List<AiClient.LocalServer> servers = AiClient.detectLocalServers(timeout);
+                this.minecraft.execute(() -> {
+                    if (servers.isEmpty()) {
+                        setStatus("No local server found. Start LM Studio / Ollama / llama.cpp and retry.", true);
+                        return;
+                    }
+                    AiClient.LocalServer chosen = servers.get(0);
+                    CTAIConfig cfg = CTAIConfig.get();
+                    cfg.apiHost = chosen.host;
+                    cfg.compatibilityMode = chosen.mode.name();
+                    cfg.availableModels = chosen.models;
+                    cfg.model = chosen.models.get(0);
+                    cfg.apiKey = "";
+                    CTAIConfig.save();
+
+                    this.compatibilityIndex = chosen.mode.ordinal();
+                    this.apiHostField.setValue(chosen.host);
+                    this.apiKeyField.setValue("");
+                    this.modelField.setValue(chosen.models.get(0));
+                    updateButtonLabels();
+
+                    String msg = "Found " + servers.size() + " local server(s). Using "
+                            + chosen.mode.getDisplayName() + " with " + chosen.models.size() + " models.";
+                    setStatus(msg, false);
+                });
+            } catch (Exception e) {
+                String message = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
+                this.minecraft.execute(() -> setStatus(message, true));
+            }
+        }, "ctai-local-detect-worker");
+        worker.setDaemon(true);
+        worker.start();
+    }
+
     private void scanModels() {
         readFields();
         CTAIConfig config = CTAIConfig.get();
@@ -382,7 +427,7 @@ public final class SetupScreen extends Screen {
         int statusY = Math.min(this.height - 14, y + this.layout.rowSpacing + 32);
         graphics.centeredText(this.font, this.status, this.width / 2, statusY,
                 this.statusError ? 0xFFFF5555 : 0xFF55FF55);
-        graphics.centeredText(this.font, Component.literal("Agent runs via /ctai <request> and stops with /ctai_stop"),
+        graphics.centeredText(this.font, Component.literal("Detect Local finds local models; agent: /ctai <request>, stop: /ctai_stop"),
                 this.width / 2, Math.min(this.height - 8, statusY + 10), 0xFFAAAAAA);
     }
 

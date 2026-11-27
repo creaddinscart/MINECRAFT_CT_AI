@@ -4,7 +4,7 @@ Bring your own AI into Minecraft - Java Edition 26.1 - 26.3 (Fabric)
 ================================================================================
 
 ONE-LINE SUMMARY (exactly 256 characters, all current + planned features)
-  MINECRAFT_CT_AI: your AI in Minecraft. 9 providers, setup, auto model scan, /ctai Q&A, scalable GUI, safe keys, whitelisted Agent plays for you (/ctai_stop). Upcoming: SSE, vision, chat history, hotkey, TTS, book/sign, Mod Menu, encryption, profiles, i18n.
+  MINECRAFT_CT_AI: your AI in Minecraft. 10 providers incl. one-click local model detection, setup, auto scan, /ctai Q&A, scalable GUI, safe keys, whitelisted Agent plays for you (/ctai_stop). Upcoming: SSE, vision, chat history, hotkey, TTS, Mod Menu, i18n.
   Official logo: branding/logo.png
 
 Full project name : MINECRAFT_CT_AI
@@ -49,6 +49,9 @@ License           : CREADDINSCART STUDIO terms of use + upstream MIT License
     Screen transitions use the stable Minecraft.setScreenAndShow(Screen) API,
     which internally adapts between the 26.1-style Minecraft.setScreen() and
     the 26.2+ Gui.setScreen(), so the same bytecode runs on every build.
+  - Added LOCAL MODEL SERVER support. A new "Detect Local" button scans common
+    local ports (LM Studio, llama.cpp / LocalAI, Text Generation WebUI, Ollama
+    model. Runs fully offline with no API key.
 
 1.0.1 (bugfix release)
   - Fixed request URL construction. OpenAI Chat, OpenRouter, Groq, DeepSeek
@@ -95,7 +98,8 @@ Key points
     commands from client-side mods.
   - A first-run setup screen must be completed before the game main menu is
     available. This guarantees the bot identity and API details are set first.
-  - Supports nine compatibility modes covering the most common AI APIs.
+  - Supports ten compatibility modes covering the most common AI APIs,
+    including automatic detection of local model servers.
   - Optional AGENT MODE lets the AI operate the game through safe, whitelisted
     Minecraft commands, with `/ctai_stop` as an emergency brake.
   - All API traffic goes directly from your game to the host you configure.
@@ -143,10 +147,14 @@ saved. Fill in the fields in this order:
      Seconds to wait for a reply. Default 30. Minimum 5.
 
   9. Compatibility
-     Click the button repeatedly to cycle through the nine supported modes.
+     Click the button repeatedly to cycle through the ten supported modes.
      The selected mode is shown directly on the button.
 
   Extra controls
+    - Detect Local   Scans common local ports (LM Studio 1234, llama.cpp /
+                     LocalAI 8080, Text Generation WebUI 5000, Ollama 11434,
+                     generic 8000) and auto-fills host, mode and the first
+                     model found. No API key or internet required.
     - Scan Models    Fetches the list of available models from your API host.
                      The provider must support a model-list endpoint.
     - Models (n)     After a scan, cycles through the discovered models and
@@ -264,19 +272,28 @@ the title screen so you can reopen and edit these settings at any time.
   Anthropic Messages         https://api.anthropic.com                     /v1/messages
   Google Gemini              https://generativelanguage.googleapis.com    /v1beta/models/...
   Ollama                     http://localhost:11434                        /api/chat
+  Local Model Server         http://127.0.0.1:1234                         /v1/chat/completions
+  DeepSeek                   https://api.deepseek.com                      /chat/completions
   OpenRouter                 https://openrouter.ai/api                     /chat/completions
   Groq                       https://api.groq.com/openai                   /chat/completions
   Custom / OpenAI-compatible http://localhost:8000/v1                      /chat/completions
 
   Notes
-    - OpenAI-compatible local servers (LM Studio, llama.cpp, vLLM, LocalAI,
-      KoboldCpp) should use "Custom / OpenAI-compatible" with their base URL.
+    - LOCAL MODEL SERVER is an OpenAI-compatible mode for offline local
+      inference. Click "Detect Local" and the mod probes common ports: LM
+      Studio 1234, llama.cpp / LocalAI 8080, Text Generation WebUI 5000,
+      Ollama native 11434 and generic OpenAI-compatible 8000. On success it
+      auto-fills the host, switches the mode and loads the first model found.
+      No API key or internet connection is required.
+    - Other OpenAI-compatible local servers (vLLM, KoboldCpp) can use
+      "Custom / OpenAI-compatible" with their base URL.
     - Gemini passes the key as a "key" query parameter, as required by Google.
     - Anthropic sends the x-api-key and anthropic-version headers.
     - OpenRouter and Groq send the standard Authorization: Bearer header.
-    - Ollama needs no API key and works fully offline once a model is pulled.
-    - Model scanning uses GET /v1/models for OpenAI-compatible APIs, /api/tags
-      for Ollama, /v1beta/models for Gemini and /v1/models for Anthropic.
+    - Ollama and Local need no API key and work fully offline.
+    - Model scanning uses GET /v1/models for OpenAI-compatible APIs (including
+      Local), /api/tags for Ollama, /v1beta/models for Gemini and /v1/models
+      for Anthropic.
 
 3.7 Configuration file
   Settings are stored at:
@@ -311,7 +328,7 @@ the title screen so you can reopen and edit these settings at any time.
 
   Valid values for compatibilityMode:
     OPENAI_CHAT, OPENAI_RESPONSES, ANTHROPIC_MESSAGES, GOOGLE_GEMINI,
-    OLLAMA, DEEPSEEK, OPENROUTER, GROQ, CUSTOM
+    OLLAMA, LOCAL, DEEPSEEK, OPENROUTER, GROQ, CUSTOM
 
   New in 1.0.2:
     uiScale            UI scale factor (0.70 - 1.50).

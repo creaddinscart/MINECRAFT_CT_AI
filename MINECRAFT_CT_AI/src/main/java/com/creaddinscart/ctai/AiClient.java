@@ -25,6 +25,85 @@ public final class AiClient {
         return send(config, "Reply with exactly: OK");
     }
 
+    public static final class LocalServer {
+        public final String host;
+        public final AiCompatibility mode;
+        public final java.util.List<String> models;
+
+        LocalServer(String host, AiCompatibility mode, java.util.List<String> models) {
+            this.host = host;
+            this.mode = mode;
+            this.models = models;
+        }
+
+        public String describe() {
+            return mode.getDisplayName() + " @ " + host + " (" + models.size() + " models)";
+        }
+    }
+
+    private static final String[][] LOCAL_CANDIDATES = {
+            {"http://127.0.0.1:1234", "LOCAL"},
+            {"http://127.0.0.1:11434", "OLLAMA"},
+            {"http://127.0.0.1:8080", "LOCAL"},
+            {"http://127.0.0.1:8000", "LOCAL"},
+            {"http://127.0.0.1:5000", "LOCAL"},
+            {"http://127.0.0.1:1234/v1", "LOCAL"},
+            {"http://localhost:1234", "LOCAL"},
+            {"http://localhost:11434", "OLLAMA"}
+    };
+
+    public static java.util.List<LocalServer> detectLocalServers(int timeoutSeconds) {
+        java.util.List<LocalServer> found = new java.util.ArrayList<>();
+        java.util.Set<String> seenHosts = new java.util.HashSet<>();
+        int probe = Math.max(1, Math.min(timeoutSeconds, 3));
+        HttpClient client = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(probe))
+                .build();
+
+        for (String[] candidate : LOCAL_CANDIDATES) {
+            String host = candidate[0];
+            if (!seenHosts.add(host)) {
+                continue;
+            }
+            AiCompatibility mode = AiCompatibility.fromName(candidate[1]);
+            try {
+                java.util.List<String> models = probeModels(client, host, mode, probe);
+                if (!models.isEmpty()) {
+                    found.add(new LocalServer(host, mode, models));
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return found;
+    }
+
+    private static java.util.List<String> probeModels(HttpClient client, String host,
+                                                        AiCompatibility mode, int timeout) throws Exception {
+        String url = mode == AiCompatibility.OLLAMA
+                ? stripTrailingSlash(host) + "/api/tags"
+                : withVersion(host, "/v1") + "/models";
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .timeout(Duration.ofSeconds(timeout))
+                .header("Accept", "application/json")
+                .GET()
+                .build();
+        HttpResponse<String> response = client.send(
+                request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            throw new IllegalStateException("HTTP " + response.statusCode());
+        }
+        JsonElement root = JsonParser.parseString(response.body());
+        if (root == null || !root.isJsonObject()) {
+            throw new IllegalStateException("Unexpected model list shape");
+        }
+        JsonObject object = root.getAsJsonObject();
+        java.util.LinkedHashSet<String> models = new java.util.LinkedHashSet<>();
+        collectIds(models, object.get(mode == AiCompatibility.OLLAMA ? "models" : "data"),
+                mode == AiCompatibility.OLLAMA ? "name" : "id");
+        return new java.util.ArrayList<>(models);
+    }
+
     public static java.util.List<String> listModels(CTAIConfig config) throws Exception {
         AiCompatibility mode = AiCompatibility.fromName(config.compatibilityMode);
         HttpClient client = HttpClient.newBuilder()
@@ -140,7 +219,8 @@ public final class AiClient {
             case OPENROUTER:
             case GROQ:
             case DEEPSEEK:
-            case CUSTOM: {
+            case CUSTOM:
+            case LOCAL: {
                 url = withVersion(host, "/v1") + "/chat/completions";
                 body.addProperty("model", config.model);
                 JsonArray messages = new JsonArray();
@@ -220,6 +300,7 @@ public final class AiClient {
                 break;
             case OLLAMA:
             case GOOGLE_GEMINI:
+            case LOCAL:
                 break;
             default:
                 builder.header("Authorization", "Bearer " + config.apiKey);
@@ -259,7 +340,7 @@ public final class AiClient {
         }
 
         String text = switch (mode) {
-            case OPENAI_CHAT, OPENROUTER, GROQ, DEEPSEEK, CUSTOM -> firstString(
+            case OPENAI_CHAT, OPENROUTER, GROQ, DEEPSEEK, CUSTOM, LOCAL -> firstString(
                     path(object, "choices", 0, "message", "content"),
                     path(object, "choices", 0, "text"));
             case OPENAI_RESPONSES -> firstString(

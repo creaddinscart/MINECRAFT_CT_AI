@@ -54,6 +54,7 @@ public final class AiClient {
                     break;
                 case OLLAMA:
                 case GOOGLE_GEMINI:
+                case LOCAL:
                     break;
                 default:
                     if (config.apiKey != null && !config.apiKey.isEmpty()) {
@@ -131,6 +132,7 @@ public final class AiClient {
             case GROQ:
             case DEEPSEEK:
             case CUSTOM:
+            case LOCAL:
                 return withVersion(host, "/v1") + "/chat/completions";
             case OPENAI_RESPONSES:
                 return withVersion(host, "/v1") + "/responses";
@@ -152,7 +154,8 @@ public final class AiClient {
             case OPENROUTER:
             case GROQ:
             case DEEPSEEK:
-            case CUSTOM: {
+            case CUSTOM:
+            case LOCAL: {
                 body.addProperty("model", config.model);
                 JsonArray messages = new JsonArray();
                 messages.add(message("system", config.systemPrompt));
@@ -213,6 +216,89 @@ public final class AiClient {
                 throw new IllegalArgumentException("Unsupported compatibility mode: " + mode);
         }
         return body.toString();
+    }
+
+    public static final class LocalServer {
+        public final String host;
+        public final AiCompatibility mode;
+        public final List<String> models;
+
+        LocalServer(String host, AiCompatibility mode, List<String> models) {
+            this.host = host;
+            this.mode = mode;
+            this.models = models;
+        }
+
+        public String describe() {
+            return mode.getDisplayName() + " @ " + host + " (" + models.size() + " models)";
+        }
+    }
+
+    private static final String[][] LOCAL_CANDIDATES = {
+            {"http://127.0.0.1:1234", "LOCAL"},
+            {"http://127.0.0.1:11434", "OLLAMA"},
+            {"http://127.0.0.1:8080", "LOCAL"},
+            {"http://127.0.0.1:8000", "LOCAL"},
+            {"http://127.0.0.1:5000", "LOCAL"},
+            {"http://localhost:1234", "LOCAL"},
+            {"http://localhost:11434", "OLLAMA"}
+    };
+
+    public static List<LocalServer> detectLocalServers(int timeoutSeconds) {
+        List<LocalServer> found = new ArrayList<LocalServer>();
+        Set<String> seen = new LinkedHashSet<String>();
+        int probe = Math.max(1, Math.min(timeoutSeconds, 3));
+        for (String[] candidate : LOCAL_CANDIDATES) {
+            String host = candidate[0];
+            if (!seen.add(host)) {
+                continue;
+            }
+            AiCompatibility mode = AiCompatibility.fromName(candidate[1]);
+            try {
+                List<String> models = probeModels(host, mode, probe);
+                if (!models.isEmpty()) {
+                    found.add(new LocalServer(host, mode, models));
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return found;
+    }
+
+    private static List<String> probeModels(String host, AiCompatibility mode, int timeout) throws Exception {
+        String url = mode == AiCompatibility.OLLAMA
+                ? stripTrailingSlash(host) + "/api/tags"
+                : withVersion(host, "/v1") + "/models";
+        HttpURLConnection connection = null;
+        try {
+            connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(timeout * 1000);
+            connection.setReadTimeout(timeout * 1000);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Accept", "application/json");
+            int status = connection.getResponseCode();
+            if (status < 200 || status >= 300) {
+                throw new IllegalStateException("HTTP " + status);
+            }
+            String response = readBody(connection, status);
+            JsonElement root = new JsonParser().parse(response);
+            if (root == null || !root.isJsonObject()) {
+                throw new IllegalStateException("Unexpected model list shape");
+            }
+            JsonObject object = root.getAsJsonObject();
+            Set<String> models = new LinkedHashSet<String>();
+            if (mode == AiCompatibility.OLLAMA) {
+                collectIds(models, object.get("models"), "name");
+            } else {
+                collectIds(models, object.get("data"), "id");
+            }
+            return new ArrayList<String>(models);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
     }
 
     public static List<String> listModels(CTAIConfig config) throws Exception {
@@ -314,6 +400,7 @@ public final class AiClient {
             case GROQ:
             case DEEPSEEK:
             case CUSTOM:
+            case LOCAL:
                 text = firstString(path(object, "choices", 0, "message", "content"),
                         path(object, "choices", 0, "text"));
                 break;

@@ -6,6 +6,7 @@ public enum AiCompatibility {
     ANTHROPIC_MESSAGES("Anthropic Messages", "https://api.anthropic.com", "claude-3-5-haiku-latest", true),
     GOOGLE_GEMINI("Google Gemini", "https://generativelanguage.googleapis.com", "gemini-1.5-flash", true),
     OLLAMA("Ollama", "http://localhost:11434", "llama3.1", false),
+    LOCAL("Local Model Server", "http://127.0.0.1:1234", "local-model", false),
     DEEPSEEK("DeepSeek", "https://api.deepseek.com", "deepseek-chat", true),
     OPENROUTER("OpenRouter", "https://openrouter.ai/api", "openai/gpt-4o-mini", true),
     GROQ("Groq", "https://api.groq.com/openai", "llama-3.3-70b-versatile", true),
